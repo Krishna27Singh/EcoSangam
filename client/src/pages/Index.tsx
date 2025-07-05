@@ -28,8 +28,6 @@ const Index = () => {
         return <CarbonCalculator />;
       case "about":
         return <About />;
-      case "chatbot":
-        return <Chatbot />;
       case "profile":
         return <UserProfile />;
       default:

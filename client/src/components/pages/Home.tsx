@@ -8,10 +8,10 @@ export const Home = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="text-center mb-12">
-        <h1 className="text-4xl md:text-6xl font-bold text-green-800 mb-4">
+        <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
           Track Your Carbon Footprint
         </h1>
-        <p className="text-xl text-green-600 max-w-2xl mx-auto">
+        <p className="text-xl text-white max-w-2xl mx-auto">
           Join millions in the fight against climate change. Monitor, reduce, and offset your environmental impact.
         </p>
       </div>
