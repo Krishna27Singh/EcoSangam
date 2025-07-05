@@ -1,6 +1,4 @@
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Home, BarChart3, Calculator, Info, MessageCircle, User } from 'lucide-react';
 
 interface MapNavigationProps {
   currentPage: string;
@@ -8,80 +6,126 @@ interface MapNavigationProps {
   onLogout: () => void;
 }
 
+const navItems = [
+  { id: 'home', label: 'Home' },
+  { id: 'dashboard', label: 'Dashboard' },
+  { id: 'calculator', label: 'Calculator' },
+  { id: 'about', label: 'About Us' },
+  { id: 'profile', label: 'Profile' },
+];
+
 export const MapNavigation: React.FC<MapNavigationProps> = ({ currentPage, onPageChange }) => {
-  const navItems = [
-    { id: 'home', label: 'Home', icon: Home },
-    { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
-    { id: 'calculator', label: 'Calculator', icon: Calculator },
-    { id: 'about', label: 'About', icon: Info },
-    { id: 'chatbot', label: 'Chatbot', icon: MessageCircle },
-    { id: 'profile', label: 'Profile', icon: User },
-  ];
-
   return (
-    <nav className="w-full sticky top-0 z-50 bg-transparent">
-      <div className="flex justify-between items-center h-20 px-6 sm:px-12 py-2">
-        {/* Brand with logo */}
-        <div className="flex items-center space-x-4">
-          <img
-            src="/ecosangamlogo.png"
-            alt="EcoSangam Logo"
-            className="h-14 w-14 object-contain"
-            style={{ display: 'block' }}
-          />
-          <span className="text-3xl font-extrabold text-white tracking-wide">
-            EcoSangam
-          </span>
-        </div>
+    <>
+      {/* Import Roboto Condensed font */}
+      <style>
+        {`
+          @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700&display=swap');
+        `}
+      </style>
+      <nav className="w-full sticky top-0 z-50 bg-transparent">
+        <div className="flex justify-between items-center h-24 px-6 sm:px-12 py-2">
+          {/* Brand with logo */}
+          <div className="flex items-center space-x-5">
+            <img
+              src="/ecosangamlogo.png"
+              alt="EcoSangam Logo"
+              className="h-20 w-20 object-contain"
+              style={{ display: 'block' }}
+            />
+            <span
+              style={{
+                fontFamily: "'Roboto Condensed', sans-serif",
+                fontWeight: 700,
+                fontSize: '2.2rem',
+                letterSpacing: '0.006em',
+                textTransform: 'uppercase',
+                lineHeight: 1,
+                color: '#e5e1d8'
+              }}
+            >
+              EcoSangam
+            </span>
+          </div>
 
-        {/* Navigation Items */}
-        <div className="hidden md:flex items-center space-x-3">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <Button
+          {/* Navigation Items */}
+          <div className="hidden md:flex items-center space-x-6">
+            {navItems.map((item) => (
+              <button
                 key={item.id}
-                variant={currentPage === item.id ? "default" : "ghost"}
-                size="lg"
                 onClick={() => onPageChange(item.id)}
-                className={`${
-                  currentPage === item.id
-                    ? 'bg-green-600 hover:bg-green-700 text-white'
-                    : 'text-white hover:bg-green-800 hover:text-green-300'
-                } transition-all duration-200 flex items-center px-6 py-3 rounded-lg font-semibold text-lg`}
+                className={`
+                  px-3 py-1.5
+                  rounded-md
+                  text-[1rem]
+                  font-semibold
+                  tracking-wider
+                  uppercase
+                  bg-transparent
+                  border-none
+                  outline-none
+                  transition-colors
+                  duration-200
+                  hover:text-white
+                  focus:outline-none
+                  active:outline-none
+                  shadow-none
+                `}
+                style={{
+                  fontFamily: "'Roboto Condensed', sans-serif",
+                  color: '#e5e1d8',
+                  fontWeight: 700,
+                  fontSize: '1rem',
+                  boxShadow: 'none',
+                }}
+                tabIndex={0}
               >
-                <Icon className="w-5 h-5 mr-2" />
                 {item.label}
-              </Button>
-            );
-          })}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* Mobile Navigation */}
-      <div className="md:hidden border-t border-green-200 bg-black/60">
-        <div className="grid grid-cols-3 gap-2 p-3">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <Button
+        {/* Mobile Navigation */}
+        <div className="md:hidden border-t border-green-200 bg-black/60">
+          <div className="grid grid-cols-3 gap-2 p-3">
+            {navItems.map((item) => (
+              <button
                 key={item.id}
-                variant={currentPage === item.id ? "default" : "ghost"}
-                size="lg"
                 onClick={() => onPageChange(item.id)}
-                className={`${
-                  currentPage === item.id
-                    ? 'bg-green-600 hover:bg-green-700 text-white'
-                    : 'text-white hover:bg-green-800 hover:text-green-300'
-                } flex-col h-auto py-3 px-2 rounded-lg font-semibold text-base`}
+                className={`
+                  py-2 px-1
+                  rounded-md
+                  text-[0.92rem]
+                  font-semibold
+                  tracking-wider
+                  uppercase
+                  bg-transparent
+                  border-none
+                  outline-none
+                  transition-colors
+                  duration-200
+                  hover:text-white
+                  focus:outline-none
+                  active:outline-none
+                  shadow-none
+                  w-full
+                `}
+                style={{
+                  fontFamily: "'Roboto Condensed', sans-serif",
+                  color: '#e5e1d8',
+                  fontWeight: 700,
+                  fontSize: '0.92rem',
+                  boxShadow: 'none',
+                }}
+                tabIndex={0}
               >
-                <Icon className="w-5 h-5 mb-1" />
-                <span>{item.label}</span>
-              </Button>
-            );
-          })}
+                {item.label}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+    </>
   );
 };

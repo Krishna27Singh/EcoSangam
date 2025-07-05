@@ -1,4 +1,5 @@
-import React, { useMemo, useState, useEffect } from 'react';
+
+import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 
 // Helper to generate non-overlapping positions with layers
@@ -27,42 +28,17 @@ function getNonOverlappingPositions(count, minY, maxY, minDist, existingPosition
 
 const NUM_STARS = 80;
 const NUM_CLOUDS = 15;
-const NUM_BACKGROUND_TREES = 25;
-const NUM_MIDGROUND_TREES = 20;
-const NUM_FOREGROUND_TREES = 15;
+const NUM_BACKGROUND_TREES = 25; // Far back trees
+const NUM_MIDGROUND_TREES = 20;  // Middle layer trees
+const NUM_FOREGROUND_TREES = 15; // Front trees
 const NUM_LARGE_BUSHES = 35;
 const NUM_SMALL_BUSHES = 45;
 const NUM_GLOWWORMS = 60;
 const NUM_FIREFLIES = 25;
-const NUM_MIDDLE_GLOWWORMS = 50;
-const NUM_CURSOR_GLOWWORMS = 40; // Cursor-following glowworms
+const NUM_MIDDLE_GLOWWORMS = 50; // New floating glowworms for middle area
 
 export const AnimatedBackground = () => {
-  const [mousePosition, setMousePosition] = useState({ x: 50, y: 50 });
-  const [isMouseActive, setIsMouseActive] = useState(false);
-
-  // Track mouse movement
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      const x = (e.clientX / window.innerWidth) * 100;
-      const y = (e.clientY / window.innerHeight) * 100;
-      setMousePosition({ x, y });
-      setIsMouseActive(true);
-    };
-
-    const handleMouseLeave = () => {
-      setIsMouseActive(false);
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseleave', handleMouseLeave);
-
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseleave', handleMouseLeave);
-    };
-  }, []);
-
+  // Memoize positions for consistent rendering with proper layering
   const backgroundTreePositions = useMemo(
     () => getNonOverlappingPositions(NUM_BACKGROUND_TREES, 65, 75, 8),
     []
@@ -100,19 +76,15 @@ export const AnimatedBackground = () => {
     []
   );
 
+  // New middle area floating glowworms
   const middleGlowwormPositions = useMemo(
     () => getNonOverlappingPositions(NUM_MIDDLE_GLOWWORMS, 35, 70, 3),
     []
   );
 
-  // Cursor-following glowworms with fixed positions
-  const cursorGlowwormPositions = useMemo(
-    () => getNonOverlappingPositions(NUM_CURSOR_GLOWWORMS, 20, 80, 4),
-    []
-  );
-
   return (
     <div className="fixed inset-0 z-0 overflow-hidden bg-gradient-to-b from-gray-950 via-green-950 to-green-800">
+      {/* Enhanced stars at the top */}
       <div className="absolute inset-0 pointer-events-none">
         {[...Array(NUM_STARS)].map((_, i) => (
           <motion.div
@@ -134,6 +106,7 @@ export const AnimatedBackground = () => {
         ))}
       </div>
 
+      {/* Enhanced clouds */}
       <div className="absolute inset-0 pointer-events-none">
         {[...Array(NUM_CLOUDS)].map((_, i) => (
           <motion.div
@@ -167,6 +140,7 @@ export const AnimatedBackground = () => {
         ))}
       </div>
 
+      {/* Background trees (farthest) */}
       {backgroundTreePositions.map((pos, i) => (
         <motion.div
           key={`bg-tree-${i}`}
@@ -194,6 +168,7 @@ export const AnimatedBackground = () => {
         </motion.div>
       ))}
 
+      {/* Midground trees */}
       {midgroundTreePositions.map((pos, i) => (
         <motion.div
           key={`mid-tree-${i}`}
@@ -224,6 +199,7 @@ export const AnimatedBackground = () => {
         </motion.div>
       ))}
 
+      {/* Foreground trees (closest, largest) */}
       {foregroundTreePositions.map((pos, i) => (
         <motion.div
           key={`fg-tree-${i}`}
@@ -255,81 +231,25 @@ export const AnimatedBackground = () => {
         </motion.div>
       ))}
 
-      {cursorGlowwormPositions.map((pos, i) => {
-        const distance = Math.sqrt(
-          Math.pow(mousePosition.x - pos.x, 2) + Math.pow(mousePosition.y - pos.y, 2)
-        );
-        const maxDistance = 30;
-        const attractionStrength = Math.max(0, (maxDistance - distance) / maxDistance);
-        const targetX = isMouseActive ? 
-          pos.x + (mousePosition.x - pos.x) * attractionStrength * 0.4 : pos.x;
-        const targetY = isMouseActive ? 
-          pos.y + (mousePosition.y - pos.y) * attractionStrength * 0.4 : pos.y;
-
-        return (
-          <motion.div
-            key={`cursor-glowworm-${i}`}
-            className="absolute rounded-full pointer-events-none"
-            style={{
-              width: '8px',
-              height: '8px',
-              background:
-                i % 10 === 0 ? '#fde047' :
-                i % 10 === 1 ? '#f97316' :
-                i % 10 === 2 ? '#ec4899' :
-                i % 10 === 3 ? '#8b5cf6' :
-                i % 10 === 4 ? '#06b6d4' :
-                i % 10 === 5 ? '#10b981' :
-                i % 10 === 6 ? '#f59e0b' :
-                i % 10 === 7 ? '#ef4444' :
-                i % 10 === 8 ? '#3b82f6' :
-                '#22c55e',
-              boxShadow:
-                i % 10 === 0 ? '0 0 20px 4px rgba(253, 224, 71, 0.8)' :
-                i % 10 === 1 ? '0 0 18px 4px rgba(249, 115, 22, 0.8)' :
-                i % 10 === 2 ? '0 0 18px 4px rgba(236, 72, 153, 0.8)' :
-                i % 10 === 3 ? '0 0 18px 4px rgba(139, 92, 246, 0.8)' :
-                i % 10 === 4 ? '0 0 16px 3px rgba(6, 182, 212, 0.8)' :
-                i % 10 === 5 ? '0 0 16px 3px rgba(16, 185, 129, 0.8)' :
-                i % 10 === 6 ? '0 0 16px 3px rgba(245, 158, 11, 0.8)' :
-                i % 10 === 7 ? '0 0 16px 3px rgba(239, 68, 68, 0.8)' :
-                i % 10 === 8 ? '0 0 14px 3px rgba(59, 130, 246, 0.8)' :
-                '0 0 14px 3px rgba(34, 197, 94, 0.8)',
-              zIndex: 10,
-              left: `${targetX}%`,
-              top: `${targetY}%`,
-              transform: 'translate(-50%, -50%)',
-            }}
-            animate={{ 
-              opacity: isMouseActive ? [0.6, 1, 0.8, 1] : [0.6, 0.9, 0.7],
-              scale: isMouseActive && attractionStrength > 0.3 ? [1, 1.3, 1.1] : [1, 1.1, 1]
-            }}
-            transition={{ 
-              opacity: { duration: 1.5 + Math.random(), repeat: Infinity },
-              scale: { duration: 0.8, repeat: Infinity }
-            }}
-          />
-        );
-      })}
-
+      {/* Middle Area Floating Colorful Glowworms - Moving SW to NE */}
       {middleGlowwormPositions.map((pos, i) => (
         <motion.div
           key={`middle-glowworm-${i}`}
-          className="absolute rounded-full pointer-events-none"
+          className="absolute rounded-full"
           style={{
             left: `${pos.x}%`,
             top: `${pos.y}%`,
             width: '5px',
             height: '5px',
             background:
-              i % 8 === 0 ? '#fde047' :
-              i % 8 === 1 ? '#f97316' :
-              i % 8 === 2 ? '#ec4899' :
-              i % 8 === 3 ? '#8b5cf6' :
-              i % 8 === 4 ? '#06b6d4' :
-              i % 8 === 5 ? '#10b981' :
-              i % 8 === 6 ? '#f59e0b' :
-              '#ef4444',
+              i % 8 === 0 ? '#fde047' : // Yellow
+              i % 8 === 1 ? '#f97316' : // Orange  
+              i % 8 === 2 ? '#ec4899' : // Pink
+              i % 8 === 3 ? '#8b5cf6' : // Purple
+              i % 8 === 4 ? '#06b6d4' : // Cyan
+              i % 8 === 5 ? '#10b981' : // Emerald
+              i % 8 === 6 ? '#f59e0b' : // Amber
+              '#ef4444', // Red
             boxShadow:
               i % 8 === 0 ? '0 0 12px 3px rgba(253, 224, 71, 0.7)' :
               i % 8 === 1 ? '0 0 12px 3px rgba(249, 115, 22, 0.7)' :
@@ -344,8 +264,8 @@ export const AnimatedBackground = () => {
           }}
           initial={{ x: 0, y: 0, opacity: 0.4 }}
           animate={{ 
-            x: [0, 40, 80, 120],
-            y: [0, -20, -40, -60],
+            x: [0, 40, 80, 120], // Moving from left to right (west to east)
+            y: [0, -20, -40, -60], // Moving upward (south to north)
             opacity: [0.4, 1, 0.6, 1, 0.3]
           }}
           transition={{ 
@@ -356,6 +276,7 @@ export const AnimatedBackground = () => {
         />
       ))}
 
+      {/* Large bushes */}
       {largeBushPositions.map((pos, i) => (
         <motion.div
           key={`large-bush-${i}`}
@@ -386,6 +307,7 @@ export const AnimatedBackground = () => {
         </motion.div>
       ))}
 
+      {/* Small bushes (dense ground cover) */}
       {smallBushPositions.map((pos, i) => (
         <motion.div
           key={`small-bush-${i}`}
@@ -415,10 +337,11 @@ export const AnimatedBackground = () => {
         </motion.div>
       ))}
 
+      {/* Ground glow worms */}
       {glowwormPositions.map((pos, i) => (
         <motion.div
           key={`glowworm-${i}`}
-          className="absolute rounded-full pointer-events-none"
+          className="absolute rounded-full"
           style={{
             left: `${pos.x}%`,
             top: `${pos.y}%`,
@@ -435,10 +358,11 @@ export const AnimatedBackground = () => {
         />
       ))}
 
+      {/* Flying fireflies */}
       {fireflyPositions.map((pos, i) => (
         <motion.div
           key={`firefly-${i}`}
-          className="absolute rounded-full pointer-events-none"
+          className="absolute rounded-full"
           style={{
             left: `${pos.x}%`,
             top: `${pos.y}%`,
@@ -463,33 +387,9 @@ export const AnimatedBackground = () => {
         />
       ))}
 
+      {/* Enhanced atmospheric layers */}
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/70 via-green-900/40 to-transparent pointer-events-none" />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-green-900/20 pointer-events-none" />
-
-      {isMouseActive && (
-        <motion.div
-          className="absolute rounded-full pointer-events-none"
-          style={{
-            left: `${mousePosition.x}%`,
-            top: `${mousePosition.y}%`,
-            width: '20px',
-            height: '20px',
-            background: 'radial-gradient(circle, rgba(253, 224, 71, 0.3) 0%, rgba(139, 92, 246, 0.2) 50%, transparent 100%)',
-            zIndex: 9,
-            transform: 'translate(-50%, -50%)',
-          }}
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ 
-            scale: [0.5, 1.5, 1], 
-            opacity: [0.3, 0.8, 0.5] 
-          }}
-          transition={{ 
-            duration: 1, 
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-      )}
     </div>
   );
 };
