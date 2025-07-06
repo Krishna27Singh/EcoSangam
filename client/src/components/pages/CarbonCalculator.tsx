@@ -41,7 +41,7 @@ export const CarbonCalculator = () => {
           {totalFootprint > 0 && (
             <div className="mt-6 bg-white/5 backdrop-blur-sm rounded-lg p-4 max-w-md mx-auto">
               <h3 className="text-[#e5e1d8] text-xl font-semibold mb-2 uppercase">TOTAL FOOTPRINT</h3>
-              <div className="text-3xl font-bold text-green-300">{totalFootprint.toFixed(2)} tons</div>
+              <div className="text-3xl font-bold text-green-600">{totalFootprint.toFixed(2)} tons</div>
               <p className="text-[#e5e1d8] text-sm opacity-80">CO₂ equivalent per year</p>
             </div>
           )}
