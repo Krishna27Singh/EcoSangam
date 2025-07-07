@@ -12,14 +12,15 @@ exports.undoImpact = async (req, res) => {
     const carbonFootprint = req.body.result || 0;
 
     const prompt = `
-You are EcoSystem, an AI-powered sustainability assistant helping users reduce and neutralize their carbon emissions.
+You are EcoSangam, an AI-powered sustainability assistant helping users reduce and neutralize their carbon emissions.
 
 The user has emitted approximately **${carbonFootprint} tons of CO₂ per year** from household activities.
 
 Give a set of **personalized, actionable suggestions** to neutralize or reduce this carbon footprint. Start your suggestions with:
-"**EcoSystem suggests you to...**"
+"**EcoSangam suggests you to...**"
 
 Instructions:
+- create a short response but not too short. 
 - Make your tone friendly and motivational.
 - Use both **technical** and **layman terms** (e.g., "install solar panels" and then explain in plain terms why and how it helps).
 - Give 4–6 suggestions, ordered by impact.

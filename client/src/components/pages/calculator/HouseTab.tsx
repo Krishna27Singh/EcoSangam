@@ -53,6 +53,7 @@ const calculateEmissions = async () => {
   const lpgEmissions = Number(data.lpg) * factors.lpg;
   const propaneEmissions = Number(data.propane) * factors.propane;
   const pelletsEmissions = Number(data.woodenPellets) * factors.woodenPellets;
+  const backendUri = import.meta.env.VITE_BACKEND_URI;
 
   const sourceMultiplier = data.energySource === 'renewable' ? 0.1 :
                            data.energySource === 'mixed' ? 0.7 : 1.0;
@@ -67,7 +68,7 @@ const calculateEmissions = async () => {
 
   // 💡 Call backend Gemini route
   try {
-    const res = await fetch('http://localhost:8000/api/gemini', {
+    const res = await fetch(`${backendUri}/api/gemini`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -340,7 +341,7 @@ const calculateEmissions = async () => {
 
 {geminiAdvice && (
   <div className="text-left bg-white/10 border border-white/20 p-4 rounded-lg text-[#e5e1d8] mt-4 whitespace-pre-line">
-    <h4 className="text-lg font-semibold uppercase mb-2">EcoSystem Suggests You To:</h4>
+    <h4 className="text-lg font-semibold uppercase mb-2">EcoSangam Suggests You To:</h4>
     {geminiAdvice}
   </div>
 )}
