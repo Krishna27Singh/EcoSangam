@@ -30,40 +30,63 @@ export const HouseTab: React.FC<HouseTabProps> = ({ onResultUpdate }) => {
     residents: '',
     energySource: 'grid'
   });
+  const [geminiAdvice, setGeminiAdvice] = useState('');
 
   const [result, setResult] = useState(0);
 
-  const calculateEmissions = () => {
-    // Emission factors (kg CO2 per unit)
-    const factors = {
-      electricity: Number(data.electricityFactor),
-      naturalGas: data.naturalGasUnit === 'kWh' ? 0.185 : 5.3, // kWh or therms
-      heatingOil: data.heatingOilUnit === 'gallons' ? 10.15 : 2.52, // gallons or liters
-      coal: 0.34, // per kWh
-      lpg: data.lpgUnit === 'therms' ? 5.68 : 1.51, // therms or kg
-      propane: data.propaneUnit === 'gallons' ? 5.72 : 1.54, // gallons or kg
-      woodenPellets: data.woodenPelletsUnit === 'tons' ? 1540 : 1.54 // metric tons or kg
-    };
-
-    const electricityEmissions = Number(data.electricity) * factors.electricity;
-    const gasEmissions = Number(data.naturalGas) * factors.naturalGas;
-    const oilEmissions = Number(data.heatingOil) * factors.heatingOil;
-    const coalEmissions = Number(data.coal) * factors.coal;
-    const lpgEmissions = Number(data.lpg) * factors.lpg;
-    const propaneEmissions = Number(data.propane) * factors.propane;
-    const pelletsEmissions = Number(data.woodenPellets) * factors.woodenPellets;
-    
-    // Adjust based on energy source
-    const sourceMultiplier = data.energySource === 'renewable' ? 0.1 : 
-                           data.energySource === 'mixed' ? 0.7 : 1.0;
-    
-    const totalEmissions = (electricityEmissions + gasEmissions + oilEmissions + coalEmissions + lpgEmissions + propaneEmissions + pelletsEmissions) * sourceMultiplier;
-    const totalInTons = totalEmissions / 1000; // Convert kg to tons
-    const perPersonTotal = Number(data.residents) > 0 ? totalInTons / Number(data.residents) : totalInTons;
-    
-    setResult(Math.round(perPersonTotal * 100) / 100);
-    onResultUpdate(Math.round(perPersonTotal * 100) / 100);
+const calculateEmissions = async () => {
+  // Emission factors (same as before)...
+  const factors = {
+    electricity: Number(data.electricityFactor),
+    naturalGas: data.naturalGasUnit === 'kWh' ? 0.185 : 5.3,
+    heatingOil: data.heatingOilUnit === 'gallons' ? 10.15 : 2.52,
+    coal: 0.34,
+    lpg: data.lpgUnit === 'therms' ? 5.68 : 1.51,
+    propane: data.propaneUnit === 'gallons' ? 5.72 : 1.54,
+    woodenPellets: data.woodenPelletsUnit === 'tons' ? 1540 : 1.54,
   };
+
+  const electricityEmissions = Number(data.electricity) * factors.electricity;
+  const gasEmissions = Number(data.naturalGas) * factors.naturalGas;
+  const oilEmissions = Number(data.heatingOil) * factors.heatingOil;
+  const coalEmissions = Number(data.coal) * factors.coal;
+  const lpgEmissions = Number(data.lpg) * factors.lpg;
+  const propaneEmissions = Number(data.propane) * factors.propane;
+  const pelletsEmissions = Number(data.woodenPellets) * factors.woodenPellets;
+
+  const sourceMultiplier = data.energySource === 'renewable' ? 0.1 :
+                           data.energySource === 'mixed' ? 0.7 : 1.0;
+
+  const totalEmissions = (electricityEmissions + gasEmissions + oilEmissions + coalEmissions + lpgEmissions + propaneEmissions + pelletsEmissions) * sourceMultiplier;
+  const totalInTons = totalEmissions / 1000;
+  const perPersonTotal = Number(data.residents) > 0 ? totalInTons / Number(data.residents) : totalInTons;
+
+  const roundedResult = Math.round(perPersonTotal * 100) / 100;
+  setResult(roundedResult);
+  onResultUpdate(roundedResult);
+
+  // 💡 Call backend Gemini route
+  try {
+    const res = await fetch('http://localhost:8000/api/gemini', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ carbonEmission: roundedResult }),
+    });
+
+    console.log("Calculated per person emission:", roundedResult);
+
+
+    const json = await res.json();
+    setGeminiAdvice(json.summary || "No suggestions received.");
+    console.log("Gemini response:", json.summary);
+  } catch (err) {
+    console.error("Failed to fetch Gemini suggestions", err);
+    setGeminiAdvice("Failed to generate advice. Please try again.");
+  }
+};
+
 
   return (
     <div className="space-y-6">
@@ -305,15 +328,24 @@ export const HouseTab: React.FC<HouseTabProps> = ({ onResultUpdate }) => {
             CALCULATE HOME EMISSIONS
           </Button>
 
-          {result > 0 && (
-            <div className="bg-[#e5e1d8]/20 backdrop-blur-sm rounded-lg p-6 text-center border border-[#e5e1d8]/30">
-              <h3 className="text-[#e5e1d8] text-xl font-semibold mb-2 uppercase">
-                HOME ENERGY FOOTPRINT
-              </h3>
-              <div className="text-3xl font-bold text-[#e5e1d8] mb-2">{result} tons</div>
-              <p className="text-[#e5e1d8]/80 text-sm">CO₂ equivalent per year (per person)</p>
-            </div>
-          )}
+{result !== 0 && !isNaN(result) && (
+  <div className="bg-[#e5e1d8]/20 backdrop-blur-sm rounded-lg p-6 text-center border border-[#e5e1d8]/30">
+    <h3 className="text-[#e5e1d8] text-xl font-semibold mb-2 uppercase">
+      HOME ENERGY FOOTPRINT
+    </h3>
+    <div className="text-3xl font-bold text-[#e5e1d8] mb-2">{result} tons</div>
+    <p className="text-[#e5e1d8]/80 text-sm mb-4">CO₂ equivalent per year (per person)</p>
+  </div>
+)}
+
+{geminiAdvice && (
+  <div className="text-left bg-white/10 border border-white/20 p-4 rounded-lg text-[#e5e1d8] mt-4 whitespace-pre-line">
+    <h4 className="text-lg font-semibold uppercase mb-2">EcoSystem Suggests You To:</h4>
+    {geminiAdvice}
+  </div>
+)}
+
+
         </CardContent>
       </Card>
     </div>

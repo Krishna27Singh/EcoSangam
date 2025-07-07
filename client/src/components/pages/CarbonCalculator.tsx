@@ -23,6 +23,12 @@ export const CarbonCalculator = () => {
     others: 0
   });
 
+const handleResultUpdate = (value: number) => {
+  updateResult('house', value);  // Just update the total, no Gemini call here
+};
+
+
+
   const updateResult = (category: string, value: number) => {
     setResults(prev => ({ ...prev, [category]: value }));
   };
@@ -110,7 +116,9 @@ export const CarbonCalculator = () => {
           </TabsContent>
           
           <TabsContent value="house">
-            <HouseTab onResultUpdate={(value) => updateResult('house', value)} />
+            <HouseTab onResultUpdate={handleResultUpdate} />
+
+            {/* <HouseTab onResultUpdate={(value) => updateResult('house', value)} /> */}
           </TabsContent>
           
           <TabsContent value="car">

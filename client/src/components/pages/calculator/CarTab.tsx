@@ -89,24 +89,38 @@ export const CarTab: React.FC<CarTabProps> = ({ onResultUpdate }) => {
   });
 
   const [result, setResult] = useState(0);
+  const [geminiAdvice, setGeminiAdvice] = useState('');
 
-  const calculateEmissions = () => {
-    const mileage = Number(data.mileage);
-    const efficiency = Number(data.efficiency);
-    
-    if (mileage === 0 || efficiency === 0) {
-      setResult(0);
-      onResultUpdate(0);
-      return;
-    }
 
-    // Convert g/km to tons CO2 per year
-    // Assuming the efficiency is in g CO2/km and mileage is annual
-    const totalEmissions = (mileage * efficiency) / 1000000; // Convert to tons
-    
-    setResult(Math.round(totalEmissions * 100) / 100);
-    onResultUpdate(Math.round(totalEmissions * 100) / 100);
-  };
+const calculateEmissions = async () => {
+  const mileage = Number(data.mileage);
+  const efficiency = Number(data.efficiency);
+  
+  if (mileage === 0 || efficiency === 0) {
+    setResult(0);
+    onResultUpdate(0);
+    return;
+  }
+
+  const totalEmissions = (mileage * efficiency) / 1000000; // tons
+  const rounded = Math.round(totalEmissions * 100) / 100;
+  setResult(rounded);
+  onResultUpdate(rounded);
+
+  // 💡 Gemini API call
+  try {
+    const res = await fetch('http://localhost:8000/api/gemini', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ carbonEmission: rounded }),
+    });
+    const json = await res.json();
+    setGeminiAdvice(json.summary || 'No suggestions received.');
+  } catch (err) {
+    console.error('Gemini error:', err);
+    setGeminiAdvice('Failed to generate advice. Please try again.');
+  }
+};
 
   const currentDatabase = vehicleData[data.vehicleDatabase as keyof typeof vehicleData];
   const currentManufacturer = data.manufacturer ? currentDatabase.manufacturers[data.manufacturer as keyof typeof currentDatabase.manufacturers] : null;
@@ -263,6 +277,14 @@ export const CarTab: React.FC<CarTabProps> = ({ onResultUpdate }) => {
               </p>
             </div>
           )}
+
+          {geminiAdvice && (
+  <div className="text-left bg-white/10 border border-white/20 p-4 rounded-lg text-[#e5e1d8] mt-4 whitespace-pre-line">
+    <h4 className="text-lg font-semibold uppercase mb-2">EcoSystem Suggests You To:</h4>
+    {geminiAdvice}
+  </div>
+)}
+
         </CardContent>
       </Card>
     </div>
