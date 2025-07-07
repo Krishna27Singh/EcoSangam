@@ -23,18 +23,23 @@ export const LoginSignup: React.FC<LoginSignupProps> = ({ onLogin }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <Card className="w-full max-w-md bg-white/95 backdrop-blur-sm shadow-xl border-green-200">
+    <div className="min-h-screen flex items-center justify-center p-4 font-roboto-condensed">
+      <Card className="w-full max-w-md bg-white/20 backdrop-blur-sm shadow-xl border border-white/30">
         <CardHeader className="text-center">
-          <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-white font-bold text-2xl">E</span>
+          <div className="w-20 h-20 flex items-center justify-center mx-auto mb-4">
+            <img 
+              src="/ecosangamlogo.png" 
+              alt="EcoSangam Logo" 
+              className="w-full h-full object-contain"
+            />
           </div>
-          <CardTitle className="text-2xl text-green-800">
-            {isLogin ? 'Welcome Back' : 'Join EcoTracker'}
+          <CardTitle className="text-2xl uppercase font-bold tracking-wide" style={{ color: '#e5e1d8', letterSpacing: '0.1px'
+           }}>
+            {isLogin ? 'WELCOME BACK' : 'JOIN ECOTRACKER'}
           </CardTitle>
-          <CardDescription className="text-green-600">
+          <CardDescription  style={{ color: '#e5e1d8', opacity: 0.8 }}>
             {isLogin 
-              ? 'Sign in to track your carbon footprint' 
+              ? 'Sign In to track your carbon footprint' 
               : 'Start your eco-friendly journey today'
             }
           </CardDescription>
@@ -43,58 +48,60 @@ export const LoginSignup: React.FC<LoginSignupProps> = ({ onLogin }) => {
           <form onSubmit={handleSubmit} className="space-y-4">
             {!isLogin && (
               <div className="space-y-2">
-                <Label htmlFor="name" className="text-green-700">Full Name</Label>
+                <Label htmlFor="name" className="font-semibold" style={{ color: '#e5e1d8', letterSpacing: '0.1px' }}>FULL NAME</Label>
                 <Input
                   id="name"
                   type="text"
-                  placeholder="Enter your full name"
+                  placeholder="Enter your Full Name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="border-green-300 focus:border-green-500"
+                  className="bg-white/10 border-white/30 text-white placeholder:text-white/60 focus:border-white/50 focus:ring-white/30"
                   required={!isLogin}
                 />
               </div>
             )}
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-green-700">Email</Label>
+              <Label htmlFor="email" className="uppercase font-semibold" style={{ color: '#e5e1d8', letterSpacing: '0.1px' }}>EMAIL</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="Enter your email"
+                placeholder="Enter your Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="border-green-300 focus:border-green-500"
+                className="bg-white/10 border-white/30 text-white placeholder:text-white/60 focus:border-white/50 focus:ring-white/30"
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-green-700">Password</Label>
+              <Label htmlFor="password" className="uppercase font-semibold" style={{ color: '#e5e1d8', letterSpacing: '0.1px' }}>PASSWORD</Label>
               <Input
                 id="password"
                 type="password"
-                placeholder="Enter your password"
+                placeholder="Enter your Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="border-green-300 focus:border-green-500"
+                className="bg-white/10 border-white/30 text-white placeholder:text-white/60 focus:border-white/50 focus:ring-white/30"
                 required
               />
             </div>
             <Button 
               type="submit" 
-              className="w-full bg-green-600 hover:bg-green-700 text-white"
+              className="w-full text-black hover:opacity-90 transition-opacity uppercase font-bold tracking-wide"
+              style={{ backgroundColor: '#e5e1d8', letterSpacing: '0.1px' }}
             >
-              {isLogin ? 'Sign In' : 'Sign Up'}
+              {isLogin ? 'SIGN IN' : 'SIGN UP'}
             </Button>
           </form>
           <div className="mt-6 text-center">
-            <p className="text-sm text-green-600">
-              {isLogin ? "Don't have an account?" : "Already have an account?"}
+            <p className="text-sm uppercase" style={{ color: '#e5e1d8', opacity: 0.8, letterSpacing: '0.1px' }}>
+              {isLogin ? "DON'T HAVE AN ACCOUNT?" : "ALREADY HAVE AN ACCOUNT?"}
               <button
                 type="button"
                 onClick={() => setIsLogin(!isLogin)}
-                className="font-medium text-green-700 hover:text-green-800 ml-1 underline"
+                className="font-medium ml-1 underline hover:opacity-80 transition-opacity uppercase"
+                style={{ color: '#e5e1d8', letterSpacing: '0.1px' }}
               >
-                {isLogin ? 'Sign up' : 'Sign in'}
+                {isLogin ? 'SIGN UP' : 'SIGN IN'}
               </button>
             </p>
           </div>
