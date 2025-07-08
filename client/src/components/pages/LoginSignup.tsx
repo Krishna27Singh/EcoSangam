@@ -91,6 +91,13 @@ export const LoginSignup: React.FC<LoginSignupProps> = ({ onLogin }) => {
             >
               {isLogin ? 'SIGN IN' : 'SIGN UP'}
             </Button>
+            <Button 
+              type="submit" 
+              className="w-full text-black hover:opacity-90 transition-opacity uppercase font-bold tracking-wide"
+              style={{ backgroundColor: '#e5e1d8', letterSpacing: '0.1px' }}
+            >
+              Login With Google
+            </Button>
           </form>
           <div className="mt-6 text-center">
             <p className="text-sm uppercase" style={{ color: '#e5e1d8', opacity: 0.8, letterSpacing: '0.1px' }}>
