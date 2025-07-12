@@ -6,9 +6,8 @@ import { Home } from "@/components/pages/Home";
 import { Dashboard } from "@/components/pages/Dashboard";
 import { CarbonCalculator } from "@/components/pages/CarbonCalculator";
 import { About } from "@/components/pages/About";
-import { Chatbot } from "@/components/pages/Chatbot";
 import { UserProfile } from "@/components/pages/UserProfile";
-import { LoginSignup } from "@/components/pages/LoginSignup";
+import  LoginSignup  from "@/components/pages/LoginSignup";
 
 const Index = () => {
   const [currentPage, setCurrentPage] = useState("home");
@@ -16,7 +15,7 @@ const Index = () => {
 
   const renderPage = () => {
     if (!isLoggedIn) {
-      return <LoginSignup onLogin={() => setIsLoggedIn(true)} />;
+      return <LoginSignup />;
     }
 
     switch (currentPage) {

@@ -129,3 +129,5 @@ export const MapNavigation: React.FC<MapNavigationProps> = ({ currentPage, onPag
     </>
   );
 };
+
+export default MapNavigation;

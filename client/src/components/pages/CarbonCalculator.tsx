@@ -153,3 +153,5 @@ const handleResultUpdate = (value: number) => {
     </div>
   );
 };
+
+export default CarbonCalculator;

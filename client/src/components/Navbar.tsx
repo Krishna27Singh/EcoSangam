@@ -91,3 +91,5 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onPageChange, onLog
     </nav>
   );
 };
+
+export default Navbar;

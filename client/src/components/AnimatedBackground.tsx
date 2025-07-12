@@ -393,3 +393,5 @@ export const AnimatedBackground = () => {
     </div>
   );
 };
+
+export default AnimatedBackground;
