@@ -14,11 +14,11 @@ router.get('/google',
 
 router.get('/google/callback',
   passport.authenticate('google', {
-    failureRedirect: 'http://localhost:8080/login',
+    failureRedirect: 'http://localhost:5175/login',
     session: true
   }),
   (req, res) => {
-    res.redirect('http://localhost:8080/home');
+    res.redirect('http://localhost:5175/home');
   }
 );
 
