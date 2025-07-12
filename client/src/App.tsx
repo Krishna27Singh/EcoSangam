@@ -13,14 +13,11 @@ import UserProfile from "@/components/pages/UserProfile";
 import LoginSignup from "@/components/pages/LoginSignup";
 import NotFound from "@/pages/NotFound";
 
-import { useAuth } from "@/context/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
 const App = () => {
-  const { login } = useAuth(); // use login from AuthContext
-
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
@@ -28,10 +25,7 @@ const App = () => {
         <Sonner />
         <BrowserRouter>
           <Routes>
-            {/* Login page */}
             <Route index element={<LoginSignup />} />
-
-            {/* Protected Routes */}
             <Route
               path="/"
               element={
@@ -46,8 +40,6 @@ const App = () => {
               <Route path="about" element={<About />} />
               <Route path="profile" element={<UserProfile />} />
             </Route>
-
-            {/* Catch-all */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
@@ -55,4 +47,5 @@ const App = () => {
     </QueryClientProvider>
   );
 };
+
 export default App;

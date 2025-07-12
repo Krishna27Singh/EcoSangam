@@ -18,7 +18,7 @@ router.get('/google/callback',
     session: true
   }),
   (req, res) => {
-    res.redirect('http://localhost:8080');
+    res.redirect('http://localhost:8080/home');
   }
 );
 

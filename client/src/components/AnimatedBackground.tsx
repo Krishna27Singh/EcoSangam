@@ -39,6 +39,7 @@ const NUM_MIDDLE_GLOWWORMS = 50; // New floating glowworms for middle area
 
 export const AnimatedBackground = () => {
   // Memoize positions for consistent rendering with proper layering
+  console.log("background is rendered");
   const backgroundTreePositions = useMemo(
     () => getNonOverlappingPositions(NUM_BACKGROUND_TREES, 65, 75, 8),
     []

@@ -14,7 +14,6 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 
-import { AnimatedBackground } from '@/components/AnimatedBackground';
 
 const LoginSignup: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -60,9 +59,6 @@ const LoginSignup: React.FC = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative font-roboto-condensed">
-      {/* ✅ Memoized background component - won't re-render when form state changes */}
-      <AnimatedBackground />
-
       <div className="relative z-10 w-full max-w-md">
         <Card className="bg-white/20 backdrop-blur-sm shadow-xl border border-white/30">
           <CardHeader className="text-center">
