@@ -5,10 +5,10 @@ import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { TrendingUp, TrendingDown, Car, Home, Plane, Utensils, Globe, Target, Zap, Loader2, Plus, Calendar, CheckCircle, Leaf, Bike, Recycle, TreePine, Droplets, Sun, Battery, ShoppingBag, Trash2 } from 'lucide-react';
+import { TrendingUp, TrendingDown, Car, Home, Plane, Utensils, Globe, Target, Zap, Loader2, Plus, Calendar, CheckCircle, Leaf, Bike, Recycle, TreePine, Droplets, Sun, Battery, ShoppingBag, Trash2, Crown, Star, Sparkles } from 'lucide-react';
 import { toast } from "sonner";
 
-// Streak Card Component
+// Enhanced Streak Card Component
 const StreakCard = ({ goal }) => {
   const today = new Date();
   const startDate = new Date(goal.createdAt || today);
@@ -37,22 +37,103 @@ const StreakCard = ({ goal }) => {
     return 'future';
   };
 
+  // Calculate streak statistics
+  const completedDays = goal.activities.filter(a => {
+    const uniqueDates = [...new Set(goal.activities.map(act => act.date))];
+    return uniqueDates.includes(a.date);
+  }).length;
+  
+  const streakPercentage = (completedDays / goal.days) * 100;
+  const isCompleted = goal.progress >= goal.target;
+
   return (
-    <div className="bg-white/5 backdrop-blur-sm border border-white/20 rounded-lg p-4">
-      <div className="flex items-center justify-between mb-3">
-        <h4 className="text-[#e5e1d8] font-semibold text-sm uppercase">
-          {goal.days}-Day Streak
-        </h4>
-        <div className="text-[#e5e1d8] text-xs opacity-60">
-          {goal.activities.filter(a => {
-            const activityDate = new Date(a.date);
-            const dates = goal.activities.map(act => act.date);
-            return dates.filter(d => d === a.date).length > 0;
-          }).length} / {goal.days} days
+    <div className={`relative overflow-hidden rounded-xl p-5 ${
+      isCompleted 
+        ? 'bg-gradient-to-br from-green-500/20 via-emerald-500/10 to-teal-500/20 border-2 border-green-400/50' 
+        : 'bg-gradient-to-br from-blue-500/10 via-purple-500/5 to-indigo-500/10 border border-white/20'
+    } backdrop-blur-sm transition-all duration-300 hover:scale-[1.02]`}>
+      
+      {/* Completion Crown */}
+      {isCompleted && (
+        <div className="absolute -top-2 -right-2">
+          <div className="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full p-2 animate-pulse">
+            <Crown className="w-5 h-5 text-white" />
+          </div>
+        </div>
+      )}
+
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center space-x-2">
+          <div className={`p-2 rounded-lg ${
+            isCompleted ? 'bg-green-500/20' : 'bg-blue-500/20'
+          }`}>
+            <Sparkles className={`w-4 h-4 ${
+              isCompleted ? 'text-green-400' : 'text-blue-400'
+            }`} />
+          </div>
+          <div>
+            <h4 className="text-[#e5e1d8] font-bold text-sm uppercase tracking-wider">
+              {goal.days}-Day Challenge
+            </h4>
+            <p className={`text-xs font-medium ${
+              isCompleted ? 'text-green-400' : 'text-blue-400'
+            }`}>
+              {isCompleted ? 'COMPLETED!' : 'IN PROGRESS'}
+            </p>
+          </div>
+        </div>
+        <div className="text-right">
+          <div className={`text-lg font-bold ${
+            isCompleted ? 'text-green-400' : 'text-[#e5e1d8]'
+          }`}>
+            {completedDays}/{goal.days}
+          </div>
+          <div className="text-xs text-[#e5e1d8] opacity-60 uppercase">
+            Days
+          </div>
+        </div>
+      </div>
+
+      {/* Progress Ring */}
+      <div className="flex justify-center mb-4">
+        <div className="relative w-20 h-20">
+          <svg className="w-20 h-20 transform -rotate-90" viewBox="0 0 100 100">
+            {/* Background circle */}
+            <circle
+              cx="50"
+              cy="50"
+              r="40"
+              stroke="rgba(255,255,255,0.1)"
+              strokeWidth="6"
+              fill="none"
+            />
+            {/* Progress circle */}
+            <circle
+              cx="50"
+              cy="50"
+              r="40"
+              stroke={isCompleted ? '#10b981' : '#3b82f6'}
+              strokeWidth="6"
+              fill="none"
+              strokeDasharray={`${2 * Math.PI * 40}`}
+              strokeDashoffset={`${2 * Math.PI * 40 * (1 - streakPercentage / 100)}`}
+              className="transition-all duration-500 ease-out"
+              strokeLinecap="round"
+            />
+          </svg>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className={`text-lg font-bold ${
+              isCompleted ? 'text-green-400' : 'text-blue-400'
+            }`}>
+              {Math.round(streakPercentage)}%
+            </span>
+          </div>
         </div>
       </div>
       
-      <div className="grid grid-cols-7 gap-1">
+      {/* Calendar Grid */}
+      <div className="grid grid-cols-7 gap-1.5 mb-4">
         {days.map((date, index) => {
           const hasActivity = hasActivityOnDay(date);
           const dayStatus = getDayStatus(date);
@@ -62,34 +143,64 @@ const StreakCard = ({ goal }) => {
             <div
               key={index}
               className={`
-                w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium
+                relative w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold
+                transition-all duration-200 hover:scale-110
                 ${hasActivity 
-                  ? 'bg-green-500 text-white' 
+                  ? 'bg-gradient-to-br from-green-400 to-green-600 text-white shadow-lg shadow-green-500/30' 
                   : dayStatus === 'today' 
-                    ? 'bg-blue-500 text-white ring-2 ring-blue-300' 
+                    ? 'bg-gradient-to-br from-blue-400 to-blue-600 text-white ring-2 ring-blue-300/50 shadow-lg shadow-blue-500/30' 
                     : dayStatus === 'past'
                       ? 'bg-white/10 text-[#e5e1d8] opacity-50'
-                      : 'bg-white/5 text-[#e5e1d8] opacity-30'
+                      : 'bg-white/5 text-[#e5e1d8] opacity-30 hover:opacity-60'
                 }
               `}
             >
               {hasActivity ? (
                 <CheckCircle className="w-4 h-4" />
+              ) : dayStatus === 'today' ? (
+                <Star className="w-4 h-4" />
               ) : (
                 dayNumber
+              )}
+              
+              {/* Completion sparkle effect */}
+              {hasActivity && (
+                <div className="absolute -top-1 -right-1">
+                  <div className="w-2 h-2 bg-yellow-400 rounded-full animate-ping"></div>
+                </div>
               )}
             </div>
           );
         })}
       </div>
       
-      {/* Show completion message for recent days */}
-      {goal.activities.length > 0 && (
-        <div className="mt-3 text-center">
-          <p className="text-green-400 text-xs uppercase font-semibold">
-            Great job staying consistent! 🎉
+      {/* Status Message */}
+      <div className="text-center">
+        {isCompleted ? (
+          <div className="space-y-2">
+            <p className="text-green-400 text-sm font-bold uppercase tracking-wide flex items-center justify-center">
+              <Crown className="w-4 h-4 mr-2" />
+              Challenge Completed! 
+              <Crown className="w-4 h-4 ml-2" />
+            </p>
+            <p className="text-green-300 text-xs opacity-80">
+              Outstanding dedication to sustainability! 🌟
+            </p>
+          </div>
+        ) : completedDays > 0 ? (
+          <p className="text-blue-400 text-sm font-semibold uppercase tracking-wide">
+            Keep the momentum going! 💪
           </p>
-        </div>
+        ) : (
+          <p className="text-[#e5e1d8] text-sm opacity-60 uppercase">
+            Start your journey today! 🚀
+          </p>
+        )}
+      </div>
+
+      {/* Animated background glow */}
+      {isCompleted && (
+        <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 via-emerald-500/5 to-teal-500/5 animate-pulse rounded-xl pointer-events-none"></div>
       )}
     </div>
   );
@@ -99,8 +210,84 @@ export const Dashboard = () => {
   const [isLoadingTip, setIsLoadingTip] = useState(false);
   const [sustainabilityTip, setSustainabilityTip] = useState('');
 
-  // EcoGoals state - starts empty
+  // EcoGoals state with localStorage persistence
   const [ecoGoals, setEcoGoals] = useState([]);
+
+  // Load data from localStorage on component mount
+  useEffect(() => {
+    const savedGoals = localStorage.getItem('ecoGoals');
+    if (savedGoals) {
+      try {
+        const parsedGoals = JSON.parse(savedGoals);
+        setEcoGoals(parsedGoals);
+      } catch (error) {
+        console.error('Error loading saved goals:', error);
+        localStorage.removeItem('ecoGoals'); // Clear corrupted data
+      }
+    }
+  }, []);
+
+  // Save data to localStorage whenever ecoGoals changes
+  useEffect(() => {
+    if (ecoGoals.length > 0) {
+      localStorage.setItem('ecoGoals', JSON.stringify(ecoGoals));
+    }
+  }, [ecoGoals]);
+
+  // Function to send completion notification to backend
+  const sendCompletionNotification = async (goal, completionDate) => {
+    try {
+      const backendUri = import.meta.env.VITE_BACKEND_URI;
+      if (!backendUri) {
+        console.warn('Backend URI not configured, skipping completion notification');
+        return;
+      }
+
+      await fetch(`${backendUri}/completedecogoal`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: 'Krishna Singh',
+          completionDate: completionDate,
+          goalCreationDate: goal.createdAt
+        }),
+      });
+    } catch (error) {
+      console.error('Error sending completion notification:', error);
+      // Don't show error to user, just log it
+    }
+  };
+
+  // Function to check and handle goal completion
+  const checkGoalCompletion = (updatedGoal, originalGoal) => {
+    const wasCompleted = originalGoal.progress >= originalGoal.target;
+    const isNowCompleted = updatedGoal.progress >= updatedGoal.target;
+
+    if (!wasCompleted && isNowCompleted) {
+      // Goal just completed!
+      const completionDate = new Date().toISOString();
+      
+      // Update goal with completion status
+      updatedGoal.completedAt = completionDate;
+      updatedGoal.isCompleted = true;
+
+      // Send completion notification to backend
+      sendCompletionNotification(updatedGoal, completionDate);
+
+      // Show celebration toast
+      toast.success(
+        `🎉 CONGRATULATIONS! You've completed your goal: "${updatedGoal.title}"! 
+        Outstanding dedication to sustainability! 🌟`,
+        {
+          duration: 6000,
+        }
+      );
+    }
+
+    return updatedGoal;
+  };
 
   const [isCreateGoalOpen, setIsCreateGoalOpen] = useState(false);
   const [isLogActivityOpen, setIsLogActivityOpen] = useState(false);
@@ -291,7 +478,10 @@ export const Dashboard = () => {
              goalType.value === 'reusable' ? 'text-purple-400' : 'text-gray-400'
     };
 
-    setEcoGoals([...ecoGoals, goal]);
+    // Check if goal is completed upon creation (unlikely but possible)
+    const goalWithCompletion = checkGoalCompletion(goal, { progress: -1, target: goal.target });
+
+    setEcoGoals([...ecoGoals, goalWithCompletion]);
     setNewGoal({ title: '', type: 'carbon', target: '', days: '', customType: '' });
     setIsCreateGoalOpen(false);
     toast.success('Eco goal created successfully!');
@@ -322,12 +512,15 @@ export const Dashboard = () => {
           }]
         };
 
+        // Check for goal completion and handle it
+        const goalWithCompletion = checkGoalCompletion(updatedGoal, goal);
+
         // Congratulate user if this is their first activity today
         if (!hasActivityToday) {
           toast.success(`🎉 Day completed! Keep up the great work on your ${goal.title}!`);
         }
 
-        return updatedGoal;
+        return goalWithCompletion;
       }
       return goal;
     });
