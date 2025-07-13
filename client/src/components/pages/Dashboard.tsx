@@ -5,8 +5,9 @@ import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { TrendingUp, TrendingDown, Car, Home, Plane, Utensils, Globe, Target, Zap, Loader2, Plus, Calendar, CheckCircle, Leaf, Bike, Recycle, TreePine, Droplets, Sun, Battery, ShoppingBag, Trash2, Crown, Star, Sparkles } from 'lucide-react';
+import { TrendingUp, TrendingDown, Car, Home, Plane, Utensils, Globe, Target, Zap, Loader2, Plus, Calendar, CheckCircle, Leaf, Bike, Recycle, TreePine, Droplets, Sun, Battery, ShoppingBag, Trash2, Crown, Star, Sparkles, CloudRain, Lightbulb, PackageCheck, ThermometerSun, Footprints, Droplet } from 'lucide-react';
 import { toast } from "sonner";
+
 
 // Enhanced Streak Card Component
 const StreakCard = ({ goal }) => {
@@ -331,10 +332,83 @@ export const Dashboard = () => {
     { value: 'waste', label: 'Reduce Waste', unit: 'items', icon: Trash2 },
     { value: 'solar', label: 'Use Renewable Energy', unit: 'days', icon: Sun },
     { value: 'reusable', label: 'Use Reusable Products', unit: 'items', icon: ShoppingBag },
-    { value: 'custom', label: 'Custom Goal', unit: '', icon: Target }
-  ];
+    { value: 'custom', label: 'Custom Goal', unit: '', icon: Target },
+    { value: 'shortshowers', label: 'Take Short Showers', unit: 'minutes saved', icon: Droplet },
+    { value: 'lessmeat', label: 'Reduce Meat Consumption', unit: 'meals', icon: Utensils },
+    { value: 'compost', label: 'Compost Waste', unit: 'kg', icon: Trash2 },
+    { value: 'publictransport', label: 'Use Public Transport', unit: 'km', icon: Footprints },
+    { value: 'coldwash', label: 'Use Cold Water for Washing', unit: 'loads', icon: ThermometerSun },
+    { value: 'ecopackaging', label: 'Buy Eco-Friendly Products', unit: 'items', icon: PackageCheck },
+    { value: 'energyefficient', label: 'Use Energy Efficient Devices', unit: 'devices', icon: Lightbulb },
+    { value: 'collectrainwater', label: 'Collect Rainwater', unit: 'liters', icon: CloudRain },
+
+  ]; 
 
   const standardActivities = {
+    shortshowers: [
+  { label: 'Took a 5-minute shower', impact: 30 },
+  { label: 'Used a low-flow showerhead', impact: 20 },
+  { label: 'Turned off water while shampooing', impact: 15 },
+  { label: 'Skipped shower today', impact: 50 },
+  { label: 'Showered with a bucket instead of tap', impact: 25 }
+],
+
+lessmeat: [
+  { label: 'Ate a vegetarian meal', impact: 2 },
+  { label: 'Ate a vegan meal', impact: 3 },
+  { label: 'Avoided beef in one meal', impact: 4 },
+  { label: 'Had a meat-free day', impact: 5 },
+  { label: 'Cooked a plant-based recipe', impact: 2.5 }
+],
+
+compost: [
+  { label: 'Composted kitchen scraps', impact: 0.5 },
+  { label: 'Started a compost bin', impact: 1.0 },
+  { label: 'Used compost in garden', impact: 0.4 },
+  { label: 'Separated wet and dry waste', impact: 0.3 },
+  { label: 'Taught someone to compost', impact: 0.6 }
+],
+
+publictransport: [
+  { label: 'Took the metro instead of car', impact: 1.0 },
+  { label: 'Used the bus for commuting', impact: 0.8 },
+  { label: 'Avoided driving for the day', impact: 2.0 },
+  { label: 'Used shared mobility (e.g. cabpool)', impact: 0.6 },
+  { label: 'Walked to the station or stop', impact: 0.3 }
+],
+
+coldwash: [
+  { label: 'Used cold water for washing clothes', impact: 1.2 },
+  { label: 'Reduced washing machine cycles', impact: 1.0 },
+  { label: 'Used eco mode on washing machine', impact: 1.5 },
+  { label: 'Did full load instead of half', impact: 0.8 },
+  { label: 'Air-dried clothes instead of using dryer', impact: 2.0 }
+],
+
+ecopackaging: [
+  { label: 'Bought product with eco packaging', impact: 0.5 },
+  { label: 'Avoided single-use packaging', impact: 0.4 },
+  { label: 'Reused boxes or containers', impact: 0.3 },
+  { label: 'Chose plastic-free groceries', impact: 0.6 },
+  { label: 'Refilled old containers', impact: 0.5 }
+],
+
+energyefficient: [
+  { label: 'Replaced bulb with LED', impact: 2.0 },
+  { label: 'Used energy-efficient appliance', impact: 1.5 },
+  { label: 'Turned off appliances not in use', impact: 1.0 },
+  { label: 'Enabled power-saving mode', impact: 0.7 },
+  { label: 'Unplugged chargers overnight', impact: 0.5 }
+],
+
+collectrainwater: [
+  { label: 'Collected rainwater in a bucket', impact: 10 },
+  { label: 'Used rainwater for watering plants', impact: 5 },
+  { label: 'Washed car with rainwater', impact: 8 },
+  { label: 'Installed a rain barrel', impact: 20 },
+  { label: 'Harvested rooftop rainwater', impact: 25 }
+],
+
     carbon: [
       { label: 'Biked to work', impact: 0.5 },
       { label: 'Used public transport', impact: 0.8 },
@@ -831,7 +905,6 @@ export const Dashboard = () => {
                       <div className="lg:col-span-2">
                         <div className="flex items-center justify-between mb-4">
                           <div className="flex items-center space-x-3">
-                            <Icon className={`w-6 h-6 ${goal.color}`} />
                             <div>
                               <h3 className="text-[#e5e1d8] font-semibold uppercase text-sm">{goal.title}</h3>
                               <p className="text-[#e5e1d8] opacity-60 text-xs uppercase">{goal.days} days goal</p>
