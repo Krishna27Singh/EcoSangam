@@ -74,7 +74,7 @@ export const TrainsTab: React.FC<TrainsTabProps> = ({ onResultUpdate }) => {
           TRAIN CALCULATOR
         </CardTitle>
         <CardDescription className="text-[#e5e1d8]/80">
-          Calculate emissions for train journeys in India
+          Calculate emissions for train journeys.
         </CardDescription>
       </CardHeader>
 

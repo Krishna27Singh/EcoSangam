@@ -62,7 +62,7 @@ export const MotorbikeTab: React.FC<MotorbikeTabProps> = ({ onResultUpdate }) =>
         MOTORBIKE TRANSPORTATION
       </CardTitle>
       <CardDescription className="text-[#e5e1d8]/80">
-        Calculate emissions for a single bike trip (Indian standards)
+        Calculate emissions for a single bike trip.
       </CardDescription>
     </CardHeader>
 

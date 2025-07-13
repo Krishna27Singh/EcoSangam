@@ -66,7 +66,7 @@ export const BusTab: React.FC<BusTabProps> = ({ onResultUpdate }) => {
         BUS TRANSPORTATION
       </CardTitle>
       <CardDescription className="text-[#e5e1d8]/80">
-        Calculate emissions for single bus trip (Indian standards)
+        Calculate emissions for single bus trip.
       </CardDescription>
     </CardHeader>
     <CardContent className="space-y-6">

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,244 +13,219 @@ interface FoodTabProps {
 
 export const FoodTab: React.FC<FoodTabProps> = ({ onResultUpdate }) => {
   const [data, setData] = useState({
-    beef: '',
-    pork: '',
+    rice: '',
+    wheat: '',
+    pulses: '',
     chicken: '',
+    mutton: '',
     fish: '',
-    dairy: '',
-    eggs: '',
+    milk: '',
+    curd: '',
+    paneer: '',
+    ghee: '',
     vegetables: '',
     fruits: '',
-    grains: '',
+    sugar: '',
+    tea: '',
+    coffee: '',
+    cooking_oil: '',
     dietType: 'mixed'
   });
 
   const [result, setResult] = useState(0);
 
   const calculateEmissions = () => {
-    // Emission factors (kg CO2 per kg of food)
+    // Emission factors (kg CO2 per kg of food) - Indian context
     const emissionFactors = {
-      beef: 60,
-      pork: 7.6,
-      chicken: 6.1,
-      fish: 5.4,
-      dairy: 3.2,
-      eggs: 4.2,
+      rice: 2.7,
+      wheat: 1.1,
+      pulses: 0.9,
+      chicken: 6.9,
+      mutton: 39.2,
+      fish: 6.1,
+      milk: 3.2,
+      curd: 2.9,
+      paneer: 8.8,
+      ghee: 23.9,
       vegetables: 2.0,
       fruits: 1.1,
-      grains: 1.4
+      sugar: 3.7,
+      tea: 5.7,
+      coffee: 16.5,
+      cooking_oil: 6.3
     };
 
     let totalEmissions = 0;
     
-    // Calculate based on servings per week, convert to kg per year
-    totalEmissions += Number(data.beef) * 0.12 * 52 * emissionFactors.beef; // ~120g per serving
-    totalEmissions += Number(data.pork) * 0.12 * 52 * emissionFactors.pork;
-    totalEmissions += Number(data.chicken) * 0.12 * 52 * emissionFactors.chicken;
-    totalEmissions += Number(data.fish) * 0.12 * 52 * emissionFactors.fish;
-    totalEmissions += Number(data.dairy) * 0.25 * 52 * emissionFactors.dairy; // ~250ml per serving
-    totalEmissions += Number(data.eggs) * 0.06 * 52 * emissionFactors.eggs; // ~60g per egg
-    totalEmissions += Number(data.vegetables) * 0.15 * 52 * emissionFactors.vegetables;
-    totalEmissions += Number(data.fruits) * 0.15 * 52 * emissionFactors.fruits;
-    totalEmissions += Number(data.grains) * 0.08 * 52 * emissionFactors.grains;
+    // Calculate based on daily consumption in grams, convert to kg per year
+    totalEmissions += Number(data.rice) * 365 / 1000 * emissionFactors.rice;
+    totalEmissions += Number(data.wheat) * 365 / 1000 * emissionFactors.wheat;
+    totalEmissions += Number(data.pulses) * 365 / 1000 * emissionFactors.pulses;
+    totalEmissions += Number(data.chicken) * 365 / 1000 * emissionFactors.chicken;
+    totalEmissions += Number(data.mutton) * 365 / 1000 * emissionFactors.mutton;
+    totalEmissions += Number(data.fish) * 365 / 1000 * emissionFactors.fish;
+    totalEmissions += Number(data.milk) * 365 / 1000 * emissionFactors.milk; // ml treated as grams
+    totalEmissions += Number(data.curd) * 365 / 1000 * emissionFactors.curd;
+    totalEmissions += Number(data.paneer) * 365 / 1000 * emissionFactors.paneer;
+    totalEmissions += Number(data.ghee) * 365 / 1000 * emissionFactors.ghee;
+    totalEmissions += Number(data.vegetables) * 365 / 1000 * emissionFactors.vegetables;
+    totalEmissions += Number(data.fruits) * 365 / 1000 * emissionFactors.fruits;
+    totalEmissions += Number(data.sugar) * 365 / 1000 * emissionFactors.sugar;
+    totalEmissions += Number(data.tea) * 365 / 1000 * emissionFactors.tea;
+    totalEmissions += Number(data.coffee) * 365 / 1000 * emissionFactors.coffee;
+    totalEmissions += Number(data.cooking_oil) * 365 / 1000 * emissionFactors.cooking_oil;
 
-    // Apply diet type multiplier
-    const dietMultipliers = {
-      vegan: 0.3,
-      vegetarian: 0.5,
-      pescatarian: 0.7,
-      mixed: 1.0,
-      carnivore: 1.3
-    };
-
-    const multiplier = dietMultipliers[data.dietType as keyof typeof dietMultipliers] || 1.0;
-    const finalEmissions = totalEmissions * multiplier / 1000; // Convert to tons
+    const finalEmissions = totalEmissions / 1000; // Convert to tons
     
     setResult(Math.round(finalEmissions * 100) / 100);
     onResultUpdate(Math.round(finalEmissions * 100) / 100);
   };
 
   return (
-    <div className="space-y-6">
-      <Card className="bg-white/10 backdrop-blur-sm border-green-200/30">
-        <CardHeader>
-          <CardTitle className="text-[#e5e1d8] text-2xl flex items-center uppercase tracking-wide">
-            <Utensils className="w-6 h-6 mr-3" />
-            FOOD & DIET
-          </CardTitle>
-          <CardDescription className="text-[#e5e1d8]/80">
-            Calculate emissions from your dietary choices
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="space-y-4">
-              <h4 className="text-[#e5e1d8] font-semibold uppercase text-green-300">MEAT & PROTEIN (servings/week)</h4>
-              
-              <div>
-                <Label htmlFor="beef" className="text-[#e5e1d8] font-semibold uppercase">BEEF</Label>
-                <Input
-                  id="beef"
-                  type="number"
-                  placeholder="e.g., 2"
-                  value={data.beef}
-                  onChange={(e) => setData({...data, beef: e.target.value})}
-                  className="bg-white/20 border-green-300/50 text-[#e5e1d8] placeholder:text-[#e5e1d8]/60"
-                />
-              </div>
+  <div className="space-y-6">
+    <Card className="bg-[#e5e1d8]/10 backdrop-blur-sm border-[#e5e1d8]/30">
+      <CardHeader>
+        <CardTitle className="text-[#e5e1d8] text-2xl flex items-center uppercase tracking-wide">
+          <Utensils className="w-6 h-6 mr-3" />
+          FOOD & DIET
+        </CardTitle>
+        <CardDescription className="text-[#e5e1d8]/80">
+          Calculate emissions from your daily food consumption.
+        </CardDescription>
+      </CardHeader>
 
-              <div>
-                <Label htmlFor="pork" className="text-[#e5e1d8] font-semibold uppercase">PORK</Label>
-                <Input
-                  id="pork"
-                  type="number"
-                  placeholder="e.g., 1"
-                  value={data.pork}
-                  onChange={(e) => setData({...data, pork: e.target.value})}
-                  className="bg-white/20 border-green-300/50 text-[#e5e1d8] placeholder:text-[#e5e1d8]/60"
-                />
-              </div>
+      <CardContent className="space-y-6">
+        <div className="space-y-6">
+          {/* Staples Section */}
+          <div className="space-y-4">
+            <h4 className="text-[#e5e1d8] font-semibold uppercase text-[#e5e1d8]/90">
+              STAPLES (grams per day)
+            </h4>
 
-              <div>
-                <Label htmlFor="chicken" className="text-[#e5e1d8] font-semibold uppercase">CHICKEN</Label>
-                <Input
-                  id="chicken"
-                  type="number"
-                  placeholder="e.g., 3"
-                  value={data.chicken}
-                  onChange={(e) => setData({...data, chicken: e.target.value})}
-                  className="bg-white/20 border-green-300/50 text-[#e5e1d8] placeholder:text-[#e5e1d8]/60"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="fish" className="text-[#e5e1d8] font-semibold uppercase">FISH</Label>
-                <Input
-                  id="fish"
-                  type="number"
-                  placeholder="e.g., 2"
-                  value={data.fish}
-                  onChange={(e) => setData({...data, fish: e.target.value})}
-                  className="bg-white/20 border-green-300/50 text-[#e5e1d8] placeholder:text-[#e5e1d8]/60"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <h4 className="text-[#e5e1d8] font-semibold uppercase text-green-300">DAIRY & EGGS (servings/week)</h4>
-              
-              <div>
-                <Label htmlFor="dairy" className="text-[#e5e1d8] font-semibold uppercase">DAIRY</Label>
-                <Input
-                  id="dairy"
-                  type="number"
-                  placeholder="e.g., 10"
-                  value={data.dairy}
-                  onChange={(e) => setData({...data, dairy: e.target.value})}
-                  className="bg-white/20 border-green-300/50 text-[#e5e1d8] placeholder:text-[#e5e1d8]/60"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="eggs" className="text-[#e5e1d8] font-semibold uppercase">EGGS</Label>
-                <Input
-                  id="eggs"
-                  type="number"
-                  placeholder="e.g., 6"
-                  value={data.eggs}
-                  onChange={(e) => setData({...data, eggs: e.target.value})}
-                  className="bg-white/20 border-green-300/50 text-[#e5e1d8] placeholder:text-[#e5e1d8]/60"
-                />
-              </div>
-
-              <h4 className="text-[#e5e1d8] font-semibold uppercase text-green-300 pt-4">PLANT-BASED (servings/week)</h4>
-              
-              <div>
-                <Label htmlFor="vegetables" className="text-[#e5e1d8] font-semibold uppercase">VEGETABLES</Label>
-                <Input
-                  id="vegetables"
-                  type="number"
-                  placeholder="e.g., 20"
-                  value={data.vegetables}
-                  onChange={(e) => setData({...data, vegetables: e.target.value})}
-                  className="bg-white/20 border-green-300/50 text-[#e5e1d8] placeholder:text-[#e5e1d8]/60"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="fruits" className="text-[#e5e1d8] font-semibold uppercase">FRUITS</Label>
-                <Input
-                  id="fruits"
-                  type="number"
-                  placeholder="e.g., 14"
-                  value={data.fruits}
-                  onChange={(e) => setData({...data, fruits: e.target.value})}
-                  className="bg-white/20 border-green-300/50 text-[#e5e1d8] placeholder:text-[#e5e1d8]/60"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="grains" className="text-[#e5e1d8] font-semibold uppercase">GRAINS</Label>
-                <Input
-                  id="grains"
-                  type="number"
-                  placeholder="e.g., 21"
-                  value={data.grains}
-                  onChange={(e) => setData({...data, grains: e.target.value})}
-                  className="bg-white/20 border-green-300/50 text-[#e5e1d8] placeholder:text-[#e5e1d8]/60"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <Label className="text-[#e5e1d8] font-semibold uppercase">DIET TYPE</Label>
-                <Select value={data.dietType} onValueChange={(value) => setData({...data, dietType: value})}>
-                  <SelectTrigger className="bg-white/20 border-green-300/50 text-[#e5e1d8]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-green-800 border-green-600">
-                    <SelectItem value="vegan" className="text-[#e5e1d8]">Vegan</SelectItem>
-                    <SelectItem value="vegetarian" className="text-[#e5e1d8]">Vegetarian</SelectItem>
-                    <SelectItem value="pescatarian" className="text-[#e5e1d8]">Pescatarian</SelectItem>
-                    <SelectItem value="mixed" className="text-[#e5e1d8]">Mixed Diet</SelectItem>
-                    <SelectItem value="carnivore" className="text-[#e5e1d8]">High Meat</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="bg-green-700/20 rounded-lg p-4">
-                <h4 className="text-[#e5e1d8] font-semibold mb-2 uppercase">REDUCTION TIPS</h4>
-                <ul className="text-[#e5e1d8]/80 text-sm space-y-1">
-                  <li>• Reduce beef consumption (highest impact)</li>
-                  <li>• Choose chicken over red meat</li>
-                  <li>• Try plant-based proteins</li>
-                  <li>• Buy local and seasonal produce</li>
-                  <li>• Reduce food waste</li>
-                  <li>• Consider one meatless day per week</li>
-                </ul>
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[
+                { id: 'rice', label: 'RICE', placeholder: 'e.g., 200' },
+                { id: 'wheat', label: 'WHEAT (Roti/Bread)', placeholder: 'e.g., 150' },
+                { id: 'pulses', label: 'PULSES (Dal)', placeholder: 'e.g., 50' },
+                { id: 'vegetables', label: 'VEGETABLES', placeholder: 'e.g., 200' }
+              ].map(({ id, label, placeholder }) => (
+                <div key={id}>
+                  <Label htmlFor={id} className="text-[#e5e1d8] font-semibold uppercase">{label}</Label>
+                  <Input
+                    id={id}
+                    type="number"
+                    placeholder={placeholder}
+                    value={data[id]}
+                    onChange={(e) => setData({ ...data, [id]: e.target.value })}
+                    className="bg-[#e5e1d8]/20 border-[#e5e1d8]/50 text-[#e5e1d8] placeholder:text-[#e5e1d8]/60"
+                  />
+                </div>
+              ))}
             </div>
           </div>
 
-          <Button 
-            onClick={calculateEmissions}
-            className="w-full bg-green-600 hover:bg-green-700 text-white uppercase font-semibold"
-          >
-            CALCULATE FOOD EMISSIONS
-          </Button>
+          {/* Protein Section */}
+          <div className="space-y-4">
+            <h4 className="text-[#e5e1d8] font-semibold uppercase text-[#e5e1d8]/90">
+              PROTEIN (grams per day)
+            </h4>
 
-          {result > 0 && (
-            <div className="bg-green-600/30 backdrop-blur-sm rounded-lg p-6 text-center">
-              <h3 className="text-[#e5e1d8] text-xl font-semibold mb-2 uppercase">
-                FOOD & DIET FOOTPRINT
-              </h3>
-              <div className="text-3xl font-bold text-green-300 mb-2">{result} tons</div>
-              <p className="text-[#e5e1d8]/80 text-sm">CO₂ equivalent per year</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[
+                { id: 'chicken', label: 'CHICKEN', placeholder: 'e.g., 100' },
+                { id: 'mutton', label: 'MUTTON/GOAT', placeholder: 'e.g., 50' },
+                { id: 'fish', label: 'FISH', placeholder: 'e.g., 80' },
+                { id: 'paneer', label: 'PANEER', placeholder: 'e.g., 50' }
+              ].map(({ id, label, placeholder }) => (
+                <div key={id}>
+                  <Label htmlFor={id} className="text-[#e5e1d8] font-semibold uppercase">{label}</Label>
+                  <Input
+                    id={id}
+                    type="number"
+                    placeholder={placeholder}
+                    value={data[id]}
+                    onChange={(e) => setData({ ...data, [id]: e.target.value })}
+                    className="bg-[#e5e1d8]/20 border-[#e5e1d8]/50 text-[#e5e1d8] placeholder:text-[#e5e1d8]/60"
+                  />
+                </div>
+              ))}
             </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
-  );
+          </div>
+
+          {/* Dairy & Others */}
+          <div className="space-y-4">
+            <h4 className="text-[#e5e1d8] font-semibold uppercase text-[#e5e1d8]/90">
+              DAIRY & OTHERS (grams/ml per day)
+            </h4>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[
+                { id: 'milk', label: 'MILK (ml)', placeholder: 'e.g., 200' },
+                { id: 'curd', label: 'CURD', placeholder: 'e.g., 100' },
+                { id: 'ghee', label: 'GHEE', placeholder: 'e.g., 10' },
+                { id: 'cooking_oil', label: 'COOKING OIL', placeholder: 'e.g., 20' },
+                { id: 'fruits', label: 'FRUITS', placeholder: 'e.g., 150' },
+                { id: 'sugar', label: 'SUGAR', placeholder: 'e.g., 20' },
+                { id: 'tea', label: 'TEA (grams of tea leaves)', placeholder: 'e.g., 5' },
+                { id: 'coffee', label: 'COFFEE (grams of coffee)', placeholder: 'e.g., 10' }
+              ].map(({ id, label, placeholder }) => (
+                <div key={id}>
+                  <Label htmlFor={id} className="text-[#e5e1d8] font-semibold uppercase">{label}</Label>
+                  <Input
+                    id={id}
+                    type="number"
+                    placeholder={placeholder}
+                    value={data[id]}
+                    onChange={(e) => setData({ ...data, [id]: e.target.value })}
+                    className="bg-[#e5e1d8]/20 border-[#e5e1d8]/50 text-[#e5e1d8] placeholder:text-[#e5e1d8]/60"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Diet Type Dropdown */}
+          <div>
+            <Label className="text-[#e5e1d8] font-semibold uppercase">DIET TYPE</Label>
+            <Select
+              value={data.dietType}
+              onValueChange={(value) => setData({ ...data, dietType: value })}
+            >
+              <SelectTrigger className="bg-[#e5e1d8]/20 border-[#e5e1d8]/50 text-[#e5e1d8]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-[#e5e1d8] border-[#e5e1d8]/60">
+                <SelectItem value="vegan" className="text-black">Vegan</SelectItem>
+                <SelectItem value="vegetarian" className="text-black">Vegetarian</SelectItem>
+                <SelectItem value="jain" className="text-black">Jain Vegetarian</SelectItem>
+                <SelectItem value="mixed" className="text-black">Mixed Diet</SelectItem>
+                <SelectItem value="non_veg" className="text-black">Non-Vegetarian</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        {/* Calculate Button */}
+        <Button
+          onClick={calculateEmissions}
+          className="w-full bg-[#e5e1d8] hover:bg-[#e5e1d8]/90 text-black uppercase font-semibold"
+        >
+          CALCULATE FOOD EMISSIONS
+        </Button>
+
+        {/* Result Box */}
+        {result > 0 && (
+          <div className="bg-[#e5e1d8]/30 backdrop-blur-sm rounded-lg p-6 text-center">
+            <h3 className="text-[#e5e1d8] text-xl font-semibold mb-2 uppercase">
+              FOOD & DIET FOOTPRINT
+            </h3>
+            <div className="text-3xl font-bold text-[#e5e1d8] mb-2">{result} tons</div>
+            <p className="text-[#e5e1d8]/80 text-sm">CO₂ equivalent per year</p>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  </div>
+);
+
 };
