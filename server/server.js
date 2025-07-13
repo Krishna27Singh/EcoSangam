@@ -34,9 +34,11 @@ app.use(passport.session());
 
 app.use('/auth', authRoutes);
 
-app.get('/test', (req, res) => {
-  res.json({ msg: 'This route is working fine' });
-});
+const geminiRoutes = require('./routes/geminiRoutes');
+app.use('/api/gemini', geminiRoutes);
+
+const tipsRoute = require("./routes/tipsRoute");
+app.use("/api/tips", tipsRoute);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
