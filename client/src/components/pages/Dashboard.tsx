@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -7,6 +7,93 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { TrendingUp, TrendingDown, Car, Home, Plane, Utensils, Globe, Target, Zap, Loader2, Plus, Calendar, CheckCircle, Leaf, Bike, Recycle, TreePine, Droplets, Sun, Battery, ShoppingBag, Trash2 } from 'lucide-react';
 import { toast } from "sonner";
+
+// Streak Card Component
+const StreakCard = ({ goal }) => {
+  const today = new Date();
+  const startDate = new Date(goal.createdAt || today);
+  const days = [];
+  
+  // Generate array of dates for the goal duration
+  for (let i = 0; i < goal.days; i++) {
+    const date = new Date(startDate);
+    date.setDate(startDate.getDate() + i);
+    days.push(date);
+  }
+
+  // Check if a day has activities
+  const hasActivityOnDay = (date) => {
+    const dateStr = date.toISOString().split('T')[0];
+    return goal.activities.some(activity => activity.date === dateStr);
+  };
+
+  // Check if day is past, current, or future
+  const getDayStatus = (date) => {
+    const dateStr = date.toISOString().split('T')[0];
+    const todayStr = today.toISOString().split('T')[0];
+    
+    if (dateStr < todayStr) return 'past';
+    if (dateStr === todayStr) return 'today';
+    return 'future';
+  };
+
+  return (
+    <div className="bg-white/5 backdrop-blur-sm border border-white/20 rounded-lg p-4">
+      <div className="flex items-center justify-between mb-3">
+        <h4 className="text-[#e5e1d8] font-semibold text-sm uppercase">
+          {goal.days}-Day Streak
+        </h4>
+        <div className="text-[#e5e1d8] text-xs opacity-60">
+          {goal.activities.filter(a => {
+            const activityDate = new Date(a.date);
+            const dates = goal.activities.map(act => act.date);
+            return dates.filter(d => d === a.date).length > 0;
+          }).length} / {goal.days} days
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-7 gap-1">
+        {days.map((date, index) => {
+          const hasActivity = hasActivityOnDay(date);
+          const dayStatus = getDayStatus(date);
+          const dayNumber = index + 1;
+          
+          return (
+            <div
+              key={index}
+              className={`
+                w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium
+                ${hasActivity 
+                  ? 'bg-green-500 text-white' 
+                  : dayStatus === 'today' 
+                    ? 'bg-blue-500 text-white ring-2 ring-blue-300' 
+                    : dayStatus === 'past'
+                      ? 'bg-white/10 text-[#e5e1d8] opacity-50'
+                      : 'bg-white/5 text-[#e5e1d8] opacity-30'
+                }
+              `}
+            >
+              {hasActivity ? (
+                <CheckCircle className="w-4 h-4" />
+              ) : (
+                dayNumber
+              )}
+            </div>
+          );
+        })}
+      </div>
+      
+      {/* Show completion message for recent days */}
+      {goal.activities.length > 0 && (
+        <div className="mt-3 text-center">
+          <p className="text-green-400 text-xs uppercase font-semibold">
+            Great job staying consistent! 🎉
+          </p>
+        </div>
+      )}
+    </div>
+  );
+};
 
 export const Dashboard = () => {
   const [isLoadingTip, setIsLoadingTip] = useState(false);
@@ -193,6 +280,7 @@ export const Dashboard = () => {
       progress: 0,
       activities: [],
       icon: goalType.icon,
+      createdAt: new Date().toISOString(),
       color: goalType.value === 'carbon' ? 'text-green-400' : 
              goalType.value === 'plants' ? 'text-green-500' : 
              goalType.value === 'bicycle' ? 'text-blue-400' :
@@ -217,19 +305,29 @@ export const Dashboard = () => {
 
     const activityName = newActivity.customActivity || newActivity.activity;
     const impactValue = parseFloat(newActivity.impact);
+    const today = new Date().toISOString().split('T')[0];
     
     const updatedGoals = ecoGoals.map(goal => {
       if (goal.id === selectedGoalForActivity.id) {
         const newProgress = Math.min(goal.progress + impactValue, goal.target);
-        return {
+        const hasActivityToday = goal.activities.some(a => a.date === today);
+        
+        const updatedGoal = {
           ...goal,
           progress: newProgress,
           activities: [...goal.activities, {
-            date: new Date().toISOString().split('T')[0],
+            date: today,
             activity: activityName,
             impact: impactValue
           }]
         };
+
+        // Congratulate user if this is their first activity today
+        if (!hasActivityToday) {
+          toast.success(`🎉 Day completed! Keep up the great work on your ${goal.title}!`);
+        }
+
+        return updatedGoal;
       }
       return goal;
     });
@@ -424,7 +522,7 @@ export const Dashboard = () => {
           </Card>
         </div>
 
-        {/* ECO GOALS SECTION */}
+        {/* ECO GOALS SECTION - SINGLE COLUMN WITH STREAK CARDS */}
         <Card className="bg-white/5 backdrop-blur-sm border border-white/20 mb-8">
           <CardHeader>
             <div className="flex items-center justify-between">
@@ -526,132 +624,73 @@ export const Dashboard = () => {
                         CREATE YOUR FIRST GOAL
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="bg-black/90 border border-white/20 text-[#e5e1d8]">
-                      <DialogHeader>
-                        <DialogTitle className="text-[#e5e1d8] uppercase">CREATE NEW ECO GOAL</DialogTitle>
-                        <DialogDescription className="text-[#e5e1d8] opacity-80">
-                          Set a new sustainability goal to track your progress
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="space-y-4">
-                        <div>
-                          <label className="text-sm font-medium text-[#e5e1d8] uppercase">Goal Type</label>
-                          <select 
-                            value={newGoal.type}
-                            onChange={(e) => setNewGoal({...newGoal, type: e.target.value})}
-                            className="w-full mt-1 bg-white/10 border border-white/20 rounded-md px-3 py-2 text-[#e5e1d8]"
-                          >
-                            {standardGoalTypes.map(type => (
-                              <option key={type.value} value={type.value} className="bg-black text-[#e5e1d8]">
-                                {type.label}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                        
-                        {newGoal.type === 'custom' && (
-                          <div>
-                            <label className="text-sm font-medium text-[#e5e1d8] uppercase">Custom Goal Title</label>
-                            <Input
-                              value={newGoal.title}
-                              onChange={(e) => setNewGoal({...newGoal, title: e.target.value})}
-                              placeholder="Enter your custom goal"
-                              className="bg-white/10 border border-white/20 text-[#e5e1d8] placeholder:text-[#e5e1d8]/50"
-                            />
-                          </div>
-                        )}
-
-                        <div>
-                          <label className="text-sm font-medium text-[#e5e1d8] uppercase">Target Amount</label>
-                          <Input
-                            type="number"
-                            value={newGoal.target}
-                            onChange={(e) => setNewGoal({...newGoal, target: e.target.value})}
-                            placeholder="Enter target amount"
-                            className="bg-white/10 border border-white/20 text-[#e5e1d8] placeholder:text-[#e5e1d8]/50"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="text-sm font-medium text-[#e5e1d8] uppercase">Days to Complete</label>
-                          <Input
-                            type="number"
-                            value={newGoal.days}
-                            onChange={(e) => setNewGoal({...newGoal, days: e.target.value})}
-                            placeholder="Enter number of days"
-                            className="bg-white/10 border border-white/20 text-[#e5e1d8] placeholder:text-[#e5e1d8]/50"
-                          />
-                        </div>
-
-                        <div className="flex gap-2 pt-4">
-                          <Button onClick={handleCreateGoal} className="bg-[#e5e1d8] text-black hover:bg-[#e5e1d8]/90 uppercase font-semibold">
-                            CREATE GOAL
-                          </Button>
-                          <Button variant="outline" onClick={() => setIsCreateGoalOpen(false)} className="border-white/20 text-[#e5e1d8] hover:bg-white/10">
-                            CANCEL
-                          </Button>
-                        </div>
-                      </div>
-                    </DialogContent>
                   </Dialog>
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-6">
                 {ecoGoals.map((goal) => {
                   const Icon = goal.icon;
                   const progressPercentage = (goal.progress / goal.target) * 100;
                   return (
-                    <div key={goal.id} className="bg-white/5 backdrop-blur-sm border border-white/20 rounded-lg p-6">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center space-x-3">
-                          <Icon className={`w-6 h-6 ${goal.color}`} />
-                          <div>
-                            <h3 className="text-[#e5e1d8] font-semibold uppercase text-sm">{goal.title}</h3>
-                            <p className="text-[#e5e1d8] opacity-60 text-xs uppercase">{goal.days} days goal</p>
+                    <div key={goal.id} className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6 bg-white/5 backdrop-blur-sm border border-white/20 rounded-lg">
+                      {/* Goal Details - Left Side */}
+                      <div className="lg:col-span-2">
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center space-x-3">
+                            <Icon className={`w-6 h-6 ${goal.color}`} />
+                            <div>
+                              <h3 className="text-[#e5e1d8] font-semibold uppercase text-sm">{goal.title}</h3>
+                              <p className="text-[#e5e1d8] opacity-60 text-xs uppercase">{goal.days} days goal</p>
+                            </div>
+                          </div>
+                          <Button
+                            size="sm"
+                            onClick={() => {
+                              setSelectedGoalForActivity(goal);
+                              setIsLogActivityOpen(true);
+                            }}
+                            className="bg-[#e5e1d8] text-black hover:bg-[#e5e1d8]/90 uppercase text-xs font-semibold"
+                          >
+                            <Plus className="w-3 h-3 mr-1" />
+                            LOG
+                          </Button>
+                        </div>
+
+                        <div className="space-y-3">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-[#e5e1d8] opacity-80 uppercase">Progress</span>
+                            <span className="text-[#e5e1d8] font-semibold uppercase">
+                              {goal.progress} / {goal.target} {goal.unit}
+                            </span>
+                          </div>
+                          <Progress value={progressPercentage} className="h-2 bg-white/10" />
+                          <div className="text-center">
+                            <span className={`text-lg font-bold ${progressPercentage >= 100 ? 'text-green-400' : 'text-[#e5e1d8]'} uppercase`}>
+                              {Math.round(progressPercentage)}% COMPLETE
+                            </span>
                           </div>
                         </div>
-                        <Button
-                          size="sm"
-                          onClick={() => {
-                            setSelectedGoalForActivity(goal);
-                            setIsLogActivityOpen(true);
-                          }}
-                          className="bg-[#e5e1d8] text-black hover:bg-[#e5e1d8]/90 uppercase text-xs font-semibold"
-                        >
-                          <Plus className="w-3 h-3 mr-1" />
-                          LOG
-                        </Button>
-                      </div>
 
-                      <div className="space-y-3">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-[#e5e1d8] opacity-80 uppercase">Progress</span>
-                          <span className="text-[#e5e1d8] font-semibold uppercase">
-                            {goal.progress} / {goal.target} {goal.unit}
-                          </span>
-                        </div>
-                        <Progress value={progressPercentage} className="h-2 bg-white/10" />
-                        <div className="text-center">
-                          <span className={`text-lg font-bold ${progressPercentage >= 100 ? 'text-green-400' : 'text-[#e5e1d8]'} uppercase`}>
-                            {Math.round(progressPercentage)}% COMPLETE
-                          </span>
-                        </div>
-                      </div>
-
-                      {goal.activities.length > 0 && (
-                        <div className="mt-4 pt-4 border-t border-white/20">
-                          <h4 className="text-[#e5e1d8] font-semibold text-xs uppercase mb-2">Recent Activities</h4>
-                          <div className="space-y-1 max-h-20 overflow-y-auto">
-                            {goal.activities.slice(-3).map((activity, idx) => (
-                              <div key={idx} className="flex justify-between text-xs">
-                                <span className="text-[#e5e1d8] opacity-80">{activity.activity}</span>
-                                <span className="text-green-400">+{activity.impact} {goal.unit}</span>
-                              </div>
-                            ))}
+                        {goal.activities.length > 0 && (
+                          <div className="mt-4 pt-4 border-t border-white/20">
+                            <h4 className="text-[#e5e1d8] font-semibold text-xs uppercase mb-2">Recent Activities</h4>
+                            <div className="space-y-1 max-h-20 overflow-y-auto">
+                              {goal.activities.slice(-3).map((activity, idx) => (
+                                <div key={idx} className="flex justify-between text-xs">
+                                  <span className="text-[#e5e1d8] opacity-80">{activity.activity}</span>
+                                  <span className="text-green-400">+{activity.impact} {goal.unit}</span>
+                                </div>
+                              ))}
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
+                      </div>
+
+                      {/* Streak Card - Right Side */}
+                      <div className="lg:col-span-1">
+                        <StreakCard goal={goal} />
+                      </div>
                     </div>
                   );
                 })}
