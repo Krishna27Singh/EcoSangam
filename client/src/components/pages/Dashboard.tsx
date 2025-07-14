@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { TrendingUp, TrendingDown, Car, Home, Plane, Utensils, Globe, Target, Zap, Loader2, Plus, Calendar, CheckCircle, Leaf, Bike, Recycle, TreePine, Droplets, Sun, Battery, ShoppingBag, Trash2, Crown, Star, Sparkles, CloudRain, Lightbulb, PackageCheck, ThermometerSun, Footprints, Droplet } from 'lucide-react';
 import { toast } from "sonner";
+import { useAuth } from '../../context/AuthContext';
 
 
 // Enhanced Streak Card Component
@@ -208,6 +209,9 @@ const StreakCard = ({ goal }) => {
 };
 
 export const Dashboard = () => {
+  const { user, isLoggedIn, logout } = useAuth();
+  console.log(user.email);
+
   const [isLoadingTip, setIsLoadingTip] = useState(false);
   const [sustainabilityTip, setSustainabilityTip] = useState('');
 
@@ -235,6 +239,38 @@ export const Dashboard = () => {
     }
   }, [ecoGoals]);
 
+  // Function to calculate carbon saved based on goal type and progress
+  const calculateCarbonSaved = (goal) => {
+    const carbonSavingsMap = {
+      carbon: goal.progress, // Direct carbon reduction
+      bicycle: goal.progress * 0.15, // ~0.15 kg CO2 per km by bike vs car
+      plants: goal.progress * 22, // ~22 kg CO2 absorbed per plant per year
+      recycle: goal.progress * 0.5, // ~0.5 kg CO2 saved per recycled item
+      water: goal.progress * 0.0003, // ~0.0003 kg CO2 per liter water saved
+      energy: goal.progress * 0.5, // ~0.5 kg CO2 per kWh saved
+      waste: goal.progress * 2, // ~2 kg CO2 per waste item avoided
+      solar: goal.progress * 3, // ~3 kg CO2 per day of renewable energy
+      reusable: goal.progress * 1, // ~1 kg CO2 per reusable item
+      shortshowers: goal.progress * 0.01, // ~0.01 kg CO2 per minute water saved
+      lessmeat: goal.progress * 2.5, // ~2.5 kg CO2 per meat meal avoided
+      compost: goal.progress * 0.8, // ~0.8 kg CO2 per kg composted
+      publictransport: goal.progress * 0.12, // ~0.12 kg CO2 per km public transport vs car
+      coldwash: goal.progress * 0.6, // ~0.6 kg CO2 per cold wash load
+      ecopackaging: goal.progress * 0.3, // ~0.3 kg CO2 per eco package vs conventional
+      energyefficient: goal.progress * 1.5, // ~1.5 kg CO2 per efficient device
+      collectrainwater: goal.progress * 0.0002, // ~0.0002 kg CO2 per liter rainwater collected
+      custom: goal.progress * 0.5 // Default estimate for custom goals
+    };
+    
+    return carbonSavingsMap[goal.type] || goal.progress * 0.5;
+  };
+
+  // Function to calculate streak (number of unique days with activities)
+  const calculateStreak = (goal) => {
+    const uniqueDates = [...new Set(goal.activities.map(activity => activity.date))];
+    return uniqueDates.length;
+  };
+
   // Function to send completion notification to backend
   const sendCompletionNotification = async (goal, completionDate) => {
     try {
@@ -244,16 +280,26 @@ export const Dashboard = () => {
         return;
       }
 
+      const carbonSaved = calculateCarbonSaved(goal);
+      const streak = calculateStreak(goal);
+
+      const payload = {
+        name: user.name,
+        email: user.email,
+        startDate: goal.createdAt,
+        endDate: completionDate,
+        carbonSaved: parseFloat(carbonSaved.toFixed(2)),
+        streak: streak
+      };
+
+      console.log('Sending completion notification with payload:', payload);
+
       await fetch(`${backendUri}/completedecogoal`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          name: 'Krishna Singh',
-          completionDate: completionDate,
-          goalCreationDate: goal.createdAt
-        }),
+        body: JSON.stringify(payload),
       });
     } catch (error) {
       console.error('Error sending completion notification:', error);
