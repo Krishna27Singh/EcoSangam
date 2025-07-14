@@ -210,7 +210,7 @@ const StreakCard = ({ goal }) => {
 
 export const Dashboard = () => {
   const { user, isLoggedIn, logout } = useAuth();
-  console.log(user.email);
+  console.log(user);
 
   const [isLoadingTip, setIsLoadingTip] = useState(false);
   const [sustainabilityTip, setSustainabilityTip] = useState('');

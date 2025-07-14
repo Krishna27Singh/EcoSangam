@@ -14,6 +14,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from '@/components/ui/avatar';
+import { useAuth } from '@/context/AuthContext';
 
 export const UserProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -26,6 +27,25 @@ export const UserProfile = () => {
     streakDays: 45,
     badgesEarned: 12,
   });
+
+  const { user, logout } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URI}/auth/logout`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+      if (res.ok) {
+        await logout(); // Clears auth context
+        window.location.href = 'http://localhost:5175'; // Redirect to homepage or login
+      } else {
+        console.error('Logout failed:', res.status);
+      }
+    } catch (err) {
+      console.error('Logout error:', err);
+    }
+  };
 
   const badges = [
     { name: 'Eco Warrior', icon: '🌱', description: 'Reduced footprint by 20%' },
@@ -41,6 +61,17 @@ export const UserProfile = () => {
   return (
     <div className="min-h-screen mt-[-100px] flex items-center justify-center px-4 py-8 text-[#e5e1d8]">
       <div className="w-full max-w-4xl space-y-6">
+        {/* Logout Button */}
+        <div className="flex justify-end">
+          <Button
+            onClick={handleLogout}
+            variant="destructive"
+            className="bg-red-600 hover:bg-red-700 text-white"
+          >
+            Logout
+          </Button>
+        </div>
+
         {/* Personal Info */}
         <Card className="bg-white/5 backdrop-blur-sm border border-[#e5e1d8]/20">
           <CardHeader>
