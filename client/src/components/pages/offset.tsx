@@ -53,11 +53,6 @@ const Offset: React.FC = () => {
       <div className="relative z-10 px-6 py-12 max-w-7xl mx-auto">
         {/* Hero Section */}
         <div className="text-center mb-16">
-          <div className="flex justify-center mb-6">
-            <div className="bg-green-500/10 p-4 rounded-full backdrop-blur-sm border border-green-500/20">
-              <Heart className="w-12 h-12 text-green-400 animate-pulse" />
-            </div>
-          </div>
           
           <h1 className="text-5xl font-bold text-[#e5e1d8] mb-6 leading-tight uppercase">
             WE'RE <span className="text-green-400">GLAD</span> YOU'RE HERE
@@ -89,7 +84,7 @@ const Offset: React.FC = () => {
               </h2>
               <p className="text-xl text-black/80 mb-6 leading-relaxed max-w-4xl mx-auto">
                 Don't want to contribute too much amount but still make a difference? 
-                We understand. That's why we've created a platform where <strong className="text-green-400">every dollar counts</strong>.
+                We understand. That's why we've created a platform where <strong className="text-green-400">every rupee counts</strong>.
               </p>
               <div className="bg-white/5 rounded-xl text-black p-6 max-w-3xl mx-auto">
                 <p className="text-lg text-black">
