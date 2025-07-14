@@ -23,7 +23,7 @@ const Offset: React.FC = () => {
   const [selectedPreset, setSelectedPreset] = useState<number | null>(null);
 
   const totalOffset = offsets.reduce((sum, entry) => sum + entry.amount, 0);
-  const presetAmounts = [10, 25, 50, 100, 250, 500];
+  const presetAmounts = [100, 255, 500, 1000, 2500, 5000];
 
   const handlePresetClick = (amount: number) => {
     setContributionAmount(amount.toString());
@@ -125,7 +125,7 @@ const Offset: React.FC = () => {
                   }`}
                   onClick={() => handlePresetClick(amount)}
                 >
-                  ${amount}
+                  ₹{amount}
                 </Button>
               ))}
             </div>
@@ -134,7 +134,7 @@ const Offset: React.FC = () => {
             <div className="max-w-md mx-auto mb-8">
               <label className="block text-[#e5e1d8] text-sm font-medium mb-2">Or enter a custom amount:</label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#e5e1d8]/60 text-lg">$</span>
+                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#e5e1d8]/60 text-lg">₹</span>
                 <Input
                   type="number"
                   value={contributionAmount}
