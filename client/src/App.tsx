@@ -13,6 +13,7 @@ import UserProfile from "@/components/pages/UserProfile";
 import LoginSignup from "@/components/pages/LoginSignup";
 import NotFound from "@/pages/NotFound";
 import Offset from "./components/pages/offset";
+import Community from "./components/pages/Community";
 
 import ProtectedRoute from "@/components/ProtectedRoute";
 
@@ -39,6 +40,7 @@ const App = () => {
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="calculator" element={<CarbonCalculator />} />
               <Route path="offset" element={<Offset />} />
+              <Route path="community" element={<Community />} />
               <Route path="about" element={<About />} />
               <Route path="profile" element={<UserProfile />} />
             </Route>

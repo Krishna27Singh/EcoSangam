@@ -11,6 +11,7 @@ const navItems = [
   { id: 'dashboard', label: 'Dashboard' },
   { id: 'calculator', label: 'Calculator' },
   {id: 'offset', label: 'Offset'},
+  { id: 'community', label: 'Community'},
   { id: 'about', label: 'About Us' },
   { id: 'profile', label: 'Profile' },
 ];
