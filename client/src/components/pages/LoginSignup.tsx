@@ -70,7 +70,7 @@ const LoginSignup: React.FC = () => {
               />
             </div>
             <CardTitle className="text-2xl uppercase font-bold tracking-wide text-[#e5e1d8]">
-              {isLogin ? 'WELCOME BACK' : 'JOIN ECOTRACKER'}
+              {isLogin ? 'WELCOME BACK' : 'JOIN ECOSANGAM'}
             </CardTitle>
             <CardDescription className="text-[#e5e1d8] opacity-80">
               {isLogin
