@@ -8,16 +8,14 @@ async function generateCertificate({ name, goal, startDate, endDate, carbonSaved
   const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
-  // Set background
   page.drawRectangle({
     x: 0,
     y: 0,
     width: 800,
     height: 600,
-    color: rgb(0.93, 1, 0.93) // light green
+    color: rgb(0.93, 1, 0.93) 
   });
 
-  // Draw border
   page.drawRectangle({
     x: 10,
     y: 10,

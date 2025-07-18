@@ -6,7 +6,6 @@ export const submitReport = async (req, res) => {
     const { name, email, location, description } = req.body;
     const newReport = await Report.create({ name, email, location, description });
 
-    // Forward to AI agent for processing and simulated forwarding
     await forwardToGovt(newReport);
 
     res.status(201).json({ message: "Report submitted and forwarded successfully." });

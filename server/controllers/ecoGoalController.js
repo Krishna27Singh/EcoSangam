@@ -11,7 +11,6 @@ async function completeEcoGoal(req, res) {
 
     res.status(200).json({ message: 'Certificate sent successfully!' });
 
-    // Delete file after 10 seconds
     setTimeout(() => {
       try {
         fs.unlinkSync(filePath);
