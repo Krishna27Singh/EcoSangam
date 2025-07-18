@@ -11,6 +11,8 @@ const bodyParser = require('body-parser');
 const ecoGoalRoutes = require('./routes/ecoGoalRoutes');
 const tipsRoute = require("./routes/tipsRoute");
 const geminiRoutes = require('./routes/geminiRoutes');
+// const reportRoutes = require('./routes/reportRoutes.js');
+
 
 dotenv.config();
 const app = express();
@@ -37,6 +39,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use('/auth', authRoutes);
+// app.use("/api/reports", reportRoutes);
 
 app.use(bodyParser.json());
 
