@@ -14,11 +14,11 @@ router.get('/google',
 
 router.get('/google/callback',
   passport.authenticate('google', {
-    failureRedirect: 'https://ecosangam.onrender.com',
+    failureRedirect: 'http://localhost:5175',
     session: true
   }),
   (req, res) => {
-    res.redirect('https://ecosangam.onrender.com/home');
+    res.redirect('http://localhost:5175/home'); 
   }
 );
 
