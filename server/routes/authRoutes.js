@@ -14,7 +14,7 @@ router.get('/google',
 
 router.get('/google/callback',
   passport.authenticate('google', {
-    failureRedirect: 'http://localhost:5175',
+    failureRedirect: 'https://ecosangam.onrender.com/',
     session: true
   }),
   (req, res) => {
