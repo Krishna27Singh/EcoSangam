@@ -20,18 +20,27 @@ const PORT = process.env.PORT || 5000;
 
 connectDB();
 
+app.set('trust proxy', 1);
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-  origin: "https://ecosangam.onrender.com",
-  credentials: true
+  origin: ["http://localhost:5175", "https://ecosangam.onrender.com"],
+  credentials: true // Required for sending cookies
 }));
+
+const isProduction = process.env.NODE_ENV === 'production';
 
 // Session setup
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  cookie: {
+    secure: isProduction, // MUST be true on Render, false on localhost
+    sameSite: isProduction ? 'none' : 'lax', // 'none' allows cross-domain on Render
+    maxAge: 24 * 60 * 60 * 1000 // 1 day
+  }
 }));
 
 // Passport setup

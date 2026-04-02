@@ -35,10 +35,7 @@ const LoginSignup: React.FC = () => {
     try {
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URI}${endpoint}`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
 
@@ -47,8 +44,12 @@ const LoginSignup: React.FC = () => {
         throw new Error(errData.message || 'Something went wrong');
       }
 
-      login();
-      navigate('/home');
+      // CRITICAL ADDITION: Extract the token from the response
+      const data = await response.json(); 
+      
+      // Pass the token into your new login function
+      login(data.token); 
+
     } catch (error) {
       console.error('Auth Error:', error);
       alert((error as Error).message);
