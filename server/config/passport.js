@@ -2,30 +2,44 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const User = require('../models/User');
 
+// 1. Set dynamic backend URL based on environment
+const BACKEND_URL = process.env.NODE_ENV === 'production' 
+  ? process.env.BACKEND_URL // E.g., https://ecosangam-backend.onrender.com
+  : 'http://localhost:8890';
+
 passport.serializeUser((user, done) => {
   done(null, user.id);
 });
 
 passport.deserializeUser(async (id, done) => {
-  const user = await User.findById(id);
-  done(null, user);
+  try {
+    const user = await User.findById(id);
+    done(null, user);
+  } catch (err) {
+    done(err, null);
+  }
 });
 
 passport.use(new GoogleStrategy({
   clientID: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
-  callbackURL: 'http://localhost:8890/auth/google/callback'
+  callbackURL: `${BACKEND_URL}/auth/google/callback`,
+  proxy: true // 2. CRITICAL FOR PRODUCTION: Tells Passport to trust the host proxy and keep the URL as 'https'
 }, async (accessToken, refreshToken, profile, done) => {
-  const email = profile.emails[0].value;
+  try {
+    const email = profile.emails[0].value;
 
-  let user = await User.findOne({ email });
-  if (!user) {
-    user = new User({
-      name: profile.displayName,
-      email,
-      password: 'google-auth' // dummy value
-    });
-    await user.save();
+    let user = await User.findOne({ email });
+    if (!user) {
+      user = new User({
+        name: profile.displayName,
+        email,
+        password: 'google-auth' // dummy value
+      });
+      await user.save();
+    }
+    return done(null, user);
+  } catch (error) {
+    return done(error, null); // Added try/catch block for safety in production
   }
-  return done(null, user);
 }));
