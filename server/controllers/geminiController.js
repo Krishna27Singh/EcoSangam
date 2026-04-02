@@ -28,7 +28,7 @@ Instructions:
 - End with a short note like: "Every small step helps the planet breathe better."
     `.trim();
 
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const summary = response.text();
