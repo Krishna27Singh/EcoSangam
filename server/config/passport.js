@@ -23,9 +23,11 @@ passport.deserializeUser(async (id, done) => {
 passport.use(new GoogleStrategy({
   clientID: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
-  callbackURL: `${BACKEND_URL}/auth/google/callback`,
-  proxy: true // 2. CRITICAL FOR PRODUCTION: Tells Passport to trust the host proxy and keep the URL as 'https'
+  // Use a relative path! Passport will automatically prepend the correct domain.
+  callbackURL: '/auth/google/callback', 
+  proxy: true // This guarantees it uses 'https' on Render
 }, async (accessToken, refreshToken, profile, done) => {
+  // ... rest of your code stays the exact same
   try {
     const email = profile.emails[0].value;
 
